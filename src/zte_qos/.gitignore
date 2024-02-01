@@ -1,2 +1,6 @@
 # outputs
 out/
+
+# simulations
+simulations/.cmdenv-log
+simulations/results/
