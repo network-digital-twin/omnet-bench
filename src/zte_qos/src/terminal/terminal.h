@@ -2,6 +2,9 @@
 
 using namespace omnetpp;
 
+#ifndef __ZTE_TERMINAL_H
+#define __ZTE_TERMINAL_H
+
 namespace zte_qos {
 namespace terminal {
 
@@ -16,3 +19,5 @@ protected:
 
 } // namespace terminal
 } // namespace zte_qos
+
+#endif

@@ -22,6 +22,6 @@ network PingPong
         sender: Terminal;
         receiver: Terminal;
     connections allowunconnected:
-        sender.out --> {  datarate = 100Mbps; } --> receiver.in;
-        receiver.out --> {  datarate = 100Mbps; } --> sender.in;
+        sender.out --> {  datarate = 100Mbps; delay = 100us; } --> receiver.in;
+        receiver.out --> {  datarate = 200Mbps; delay = 50us; } --> sender.in;
 }

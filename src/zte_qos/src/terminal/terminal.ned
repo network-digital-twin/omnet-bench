@@ -15,11 +15,10 @@
 
 package zte_qos.terminal;
 
-@namespace(zte_qos::terminal);
-
 // Terminal generates packets and sends them to the corresponding switches.
 simple Terminal
 {
+    @class(zte_qos::terminal::Terminal);
     @display("i=device/laptop");
     gates:
         input in;
