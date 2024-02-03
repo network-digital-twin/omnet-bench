@@ -20,9 +20,14 @@ import zte_qos.terminal.Terminal;
 // PingPong is a Terminal - Terminal ping pong testing network.
 network PingPong
 {
+    @display("bgb=453,393");
     submodules:
-        sender: Terminal;
-        receiver: Terminal;
+        sender: Terminal {
+            @display("p=80,194");
+        }
+        receiver: Terminal {
+            @display("p=372,194");
+        }
     connections allowunconnected:
         sender.out --> {  datarate = 100Mbps; delay = 100us; } --> receiver.in;
         receiver.out --> {  datarate = 200Mbps; delay = 50us; } --> sender.in;
