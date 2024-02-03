@@ -13,4 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package zte_qos;
+package zte_qos.networks;
+
+import zte_qos.terminal.Terminal;
+
+// DummyLine is a dummy connection with a static datarate and transmission delay set, for testing.
+channel DummyLine extends ned.DatarateChannel
+{
+    datarate = 100Mbps;
+    delay = 100us;
+}
+
+// ZteNet is the main benchmark network.
+network ZteNet
+{
+    submodules:
+        sender: Terminal;
+        receiver: Terminal;
+    connections allowunconnected:
+        sender.out --> DummyLine --> receiver.in;
+        receiver.out --> DummyLine --> sender.in;
+}
