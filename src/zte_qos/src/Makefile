@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for zte_qos
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -I$$\(INET_PROJ\)/src/ -I. -L$$\(INET_PROJ\)/src -lINET$$\(D\)
 #
 
 # Name of target to be created (-o option)
@@ -19,7 +19,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH =
+INCLUDE_PATH = -I$(INET_PROJ)/src/ -I.
 
 # Additional object and library files to link with
 EXTRA_OBJS =
