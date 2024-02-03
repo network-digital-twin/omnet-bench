@@ -16,6 +16,10 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
+import inet.networklayer.diffserv.SingleRateThreeColorMeter;
+import inet.queueing.filter.RedDropper;
+import inet.queueing.common.PacketMultiplexer;
+import inet.queueing.sink.PassivePacketSink;
 import inet.queueing.queue.PacketQueue;
 //import inet.queueing.shaper.TokenBucket;
 
@@ -29,14 +33,52 @@ channel DummyLine extends ned.DatarateChannel
 // ZteNet is the main benchmark network.
 network ZteNet
 {
-    @display("bgb=729,466");
+    parameters:
+        double redWq = default(0.002);
+        **.interfaceTableModule = default("interfaceTable");
+        @display("bgb=625,490");
     submodules:
         sender: Terminal {
-            @display("p=120,134");
+            @display("p=106,232");
+        }
+        srTcm: SingleRateThreeColorMeter {
+//            interfaceTableModule = "interfaceTable";
+            cir = "30%";
+            cbs = 2KiB;
+            ebs = 4KiB;
+            @display("p=229,232");
+        }
+        redG: RedDropper {
+            wq = parent.redWq;
+            minth = 50;
+            maxth = 100;
+            maxp = 0.3;
+            @display("p=355,230");
+        }
+        redY: RedDropper {
+            wq = parent.redWq;
+            minth = 30;
+            maxth = 60;
+            maxp = 0.6;
+            @display("p=355,303");
+        }
+        mux: PacketMultiplexer {
+            @display("p=433,232");
+        }
+        sink: PassivePacketSink {
+            @display("p=355,155");
         }
         queue: PacketQueue {
-            @display("p=302,256");
+            @display("p=499,232");
         }
     connections allowunconnected:
-        sender.out --> DummyLine --> queue.in;
+        sender.out --> DummyLine --> srTcm.in;
+        // meter -> dropper
+        srTcm.greenOut --> DummyLine { @display("ls=green"); } --> redG.in;
+        srTcm.yellowOut --> DummyLine { @display("ls=yellow"); } --> redY.in;
+        srTcm.redOut --> DummyLine { @display("ls=red"); } --> sink.in;
+        // dropper --mux--> queue
+        redG.out --> DummyLine --> mux.in++;
+        redY.out --> DummyLine --> mux.in++;
+        mux.out --> DummyLine --> queue.in;
 }
