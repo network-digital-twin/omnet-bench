@@ -13,7 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package zte_qos.terminal;
+package zte_qos.networks;
+
+import zte_qos.terminal.Terminal;
 
 // PingPong is a Terminal - Terminal ping pong testing network.
 network PingPong
