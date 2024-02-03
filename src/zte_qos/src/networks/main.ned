@@ -16,6 +16,8 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
+import inet.queueing.queue.PacketQueue;
+//import inet.queueing.shaper.TokenBucket;
 
 // DummyLine is a dummy connection with a static datarate and transmission delay set, for testing.
 channel DummyLine extends ned.DatarateChannel
@@ -27,10 +29,14 @@ channel DummyLine extends ned.DatarateChannel
 // ZteNet is the main benchmark network.
 network ZteNet
 {
+    @display("bgb=729,466");
     submodules:
-        sender: Terminal;
-        receiver: Terminal;
+        sender: Terminal {
+            @display("p=120,134");
+        }
+        queue: PacketQueue {
+            @display("p=302,256");
+        }
     connections allowunconnected:
-        sender.out --> DummyLine --> receiver.in;
-        receiver.out --> DummyLine --> sender.in;
+        sender.out --> DummyLine --> queue.in;
 }
