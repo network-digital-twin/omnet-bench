@@ -16,7 +16,7 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
-import inet.networklayer.diffserv.SingleRateThreeColorMeter;
+import inet.queueing.classifier.SingleRateThreeColorClassifier;
 import inet.queueing.filter.RedDropper;
 import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.sink.PassivePacketSink;
@@ -35,20 +35,19 @@ network ZteNet
 {
     parameters:
         double redWq = default(0.002);
-        **.interfaceTableModule = default("interfaceTable");
         @display("bgb=625,490");
     submodules:
         sender: Terminal {
             @display("p=106,232");
         }
-        srTcm: SingleRateThreeColorMeter {
-//            interfaceTableModule = "interfaceTable";
-            cir = "30%";
-            cbs = 2KiB;
-            ebs = 4KiB;
+        srTcm: SingleRateThreeColorClassifier {
+            committedInformationRate = 30Mbps;
+            committedBurstSize = 500000000b;
+            excessBurstSize = 500000000b;
             @display("p=229,232");
         }
         redG: RedDropper {
+            collectionModule = "^.queue";
             wq = parent.redWq;
             minth = 50;
             maxth = 100;
@@ -56,6 +55,7 @@ network ZteNet
             @display("p=355,230");
         }
         redY: RedDropper {
+            collectionModule = "^.queue";
             wq = parent.redWq;
             minth = 30;
             maxth = 60;
@@ -74,9 +74,9 @@ network ZteNet
     connections allowunconnected:
         sender.out --> DummyLine --> srTcm.in;
         // meter -> dropper
-        srTcm.greenOut --> DummyLine { @display("ls=green"); } --> redG.in;
-        srTcm.yellowOut --> DummyLine { @display("ls=yellow"); } --> redY.in;
-        srTcm.redOut --> DummyLine { @display("ls=red"); } --> sink.in;
+        srTcm.out++ --> DummyLine { @display("ls=green"); } --> redG.in;
+        srTcm.out++ --> DummyLine { @display("ls=yellow"); } --> redY.in;
+        srTcm.out++ --> DummyLine { @display("ls=red"); } --> sink.in;
         // dropper --mux--> queue
         redG.out --> DummyLine --> mux.in++;
         redY.out --> DummyLine --> mux.in++;
