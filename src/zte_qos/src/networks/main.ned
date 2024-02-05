@@ -21,13 +21,13 @@ import inet.queueing.filter.RedDropper;
 import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.sink.PassivePacketSink;
 import inet.queueing.queue.PacketQueue;
-//import inet.queueing.shaper.TokenBucket;
+import inet.queueing.server.TokenBasedServer;
+import inet.queueing.tokengenerator.TimeBasedTokenGenerator;
 
 // DummyLine is a dummy connection with a static datarate and transmission delay set, for testing.
 channel DummyLine extends ned.DatarateChannel
 {
-    datarate = 100Mbps;
-    delay = 100us;
+    datarate = 16bps;
 }
 
 // ZteNet is the main benchmark network.
@@ -35,15 +35,13 @@ network ZteNet
 {
     parameters:
         double redWq = default(0.002);
-        @display("bgb=625,490");
+        @display("bgb=820,490");
     submodules:
         sender: Terminal {
             @display("p=106,232");
         }
         srTcm: SingleRateThreeColorClassifier {
-            committedInformationRate = 30Mbps;
-            committedBurstSize = 500000000b;
-            excessBurstSize = 500000000b;
+            bitsPerToken = 1;
             @display("p=229,232");
         }
         redG: RedDropper {
@@ -71,7 +69,18 @@ network ZteNet
         queue: PacketQueue {
             @display("p=499,232");
         }
+        shaper: TokenBasedServer {
+            @display("p=596,232");
+        }
+        tokenGen: TimeBasedTokenGenerator {
+            storageModule = "^.shaper";
+            @display("p=596,62");
+        }
+        receiver: PassivePacketSink {
+            @display("p=697,232");
+        }
     connections allowunconnected:
+        // sender -> meter
         sender.out --> DummyLine --> srTcm.in;
         // meter -> dropper
         srTcm.out++ --> DummyLine { @display("ls=green"); } --> redG.in;
@@ -81,4 +90,8 @@ network ZteNet
         redG.out --> DummyLine --> mux.in++;
         redY.out --> DummyLine --> mux.in++;
         mux.out --> DummyLine --> queue.in;
+        // queue --> shaper
+        queue.out --> DummyLine --> shaper.in;
+        // shaper --> receiver
+        shaper.out --> DummyLine --> receiver.in;
 }
