@@ -2,7 +2,7 @@
 #include "terminal.h"
 #include "packet/meta_tag_m.h"
 #include "inet/common/packet/Packet.h"
-#include "inet/common/packet/chunk/BitCountChunk.h"
+#include "inet/common/packet/chunk/ByteCountChunk.h"
 
 using namespace omnetpp;
 
@@ -17,7 +17,7 @@ void Terminal::initialize() {
         // create a packet of size=100Mb and tos=1 as a packet tag
         int tos = 114514;
         std::string title = "ping_tos_" + std::to_string(tos);
-        auto data = inet::makeShared<inet::BitCountChunk>(inet::b(16));
+        auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(2));
         auto packet = new inet::Packet(title.c_str(), data);
         auto metaTag = packet->addTag<inet::MetaTag>();
         metaTag->setTos(tos);
@@ -32,7 +32,7 @@ void Terminal::handleMessage(cMessage *msg) {
         auto recvTag = recvPkt->getTag<inet::MetaTag>();
         int tos = recvTag->getTos() * 100;
         std::string title = "pong_tos_" + std::to_string(tos);
-        auto data = inet::makeShared<inet::BitCountChunk>(inet::b(16));
+        auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(2));
         auto packet = new inet::Packet(title.c_str(), data);
         send(packet, "out");
     }

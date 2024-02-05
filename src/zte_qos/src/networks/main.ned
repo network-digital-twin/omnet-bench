@@ -16,6 +16,7 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
+import inet.queueing.common.PacketDelayer;
 import inet.queueing.classifier.SingleRateThreeColorClassifier;
 import inet.queueing.filter.RedDropper;
 import inet.queueing.common.PacketMultiplexer;
@@ -24,25 +25,22 @@ import inet.queueing.queue.PacketQueue;
 import inet.queueing.server.TokenBasedServer;
 import inet.queueing.tokengenerator.TimeBasedTokenGenerator;
 
-// DummyLine is a dummy connection with a static datarate and transmission delay set, for testing.
-channel DummyLine extends ned.DatarateChannel
-{
-    datarate = 16bps;
-}
-
 // ZteNet is the main benchmark network.
 network ZteNet
 {
     parameters:
         double redWq = default(0.002);
-        @display("bgb=820,490");
+        @display("bgb=1277,490");
     submodules:
         sender: Terminal {
-            @display("p=106,232");
+            @display("p=56,232");
+        }
+        inChan: PacketDelayer {
+            @display("p=178,232");
         }
         srTcm: SingleRateThreeColorClassifier {
             bitsPerToken = 1;
-            @display("p=229,232");
+            @display("p=300,232");
         }
         redG: RedDropper {
             collectionModule = "^.queue";
@@ -50,7 +48,7 @@ network ZteNet
             minth = 50;
             maxth = 100;
             maxp = 0.3;
-            @display("p=355,230");
+            @display("p=511,232");
         }
         redY: RedDropper {
             collectionModule = "^.queue";
@@ -58,40 +56,45 @@ network ZteNet
             minth = 30;
             maxth = 60;
             maxp = 0.6;
-            @display("p=355,303");
+            @display("p=511,305");
         }
         mux: PacketMultiplexer {
-            @display("p=433,232");
+            @display("p=642,232");
         }
         sink: PassivePacketSink {
-            @display("p=355,155");
+            @display("p=511,157");
         }
         queue: PacketQueue {
-            @display("p=499,232");
+            @display("p=795,232");
         }
         shaper: TokenBasedServer {
-            @display("p=596,232");
+            @display("p=952,232");
         }
         tokenGen: TimeBasedTokenGenerator {
             storageModule = "^.shaper";
-            @display("p=596,62");
+            @display("p=952,62");
+        }
+        outChan: PacketDelayer {
+            @display("p=1085,232");
         }
         receiver: PassivePacketSink {
-            @display("p=697,232");
+            @display("p=1217,232");
         }
     connections allowunconnected:
         // sender -> meter
-        sender.out --> DummyLine --> srTcm.in;
+        sender.out --> inChan.in;
+        inChan.out --> srTcm.in;
         // meter -> dropper
-        srTcm.out++ --> DummyLine { @display("ls=green"); } --> redG.in;
-        srTcm.out++ --> DummyLine { @display("ls=yellow"); } --> redY.in;
-        srTcm.out++ --> DummyLine { @display("ls=red"); } --> sink.in;
+        srTcm.out++ --> { @display("ls=green"); } --> redG.in;
+        srTcm.out++ --> { @display("ls=yellow"); } --> redY.in;
+        srTcm.out++ --> { @display("ls=red"); } --> sink.in;
         // dropper --mux--> queue
-        redG.out --> DummyLine --> mux.in++;
-        redY.out --> DummyLine --> mux.in++;
-        mux.out --> DummyLine --> queue.in;
+        redG.out --> mux.in++;
+        redY.out --> mux.in++;
+        mux.out --> queue.in;
         // queue --> shaper
-        queue.out --> DummyLine --> shaper.in;
+        queue.out --> shaper.in;
         // shaper --> receiver
-        shaper.out --> DummyLine --> receiver.in;
+        shaper.out --> outChan.in;
+        outChan.out --> receiver.in;
 }
