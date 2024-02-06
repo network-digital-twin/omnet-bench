@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from packet/meta_tag.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from packet/MetaTag.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <memory>
 #include <type_traits>
-#include "meta_tag_m.h"
+#include "MetaTag_m.h"
 
 namespace omnetpp {
 

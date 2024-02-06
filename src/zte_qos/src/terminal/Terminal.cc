@@ -1,8 +1,8 @@
 #include <iostream>
-#include "terminal.h"
-#include "packet/meta_tag_m.h"
+#include "packet/MetaTag_m.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
+#include "Terminal.h"
 
 using namespace omnetpp;
 

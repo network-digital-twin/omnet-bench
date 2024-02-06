@@ -1,9 +1,9 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from packet/meta_tag.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from packet/MetaTag.msg.
 //
 
-#ifndef __INET_META_TAG_M_H
-#define __INET_META_TAG_M_H
+#ifndef __INET_METATAG_M_H
+#define __INET_METATAG_M_H
 
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
@@ -29,7 +29,7 @@ class MetaTag;
 namespace inet {
 
 /**
- * Class generated from <tt>packet/meta_tag.msg:21</tt> by opp_msgtool.
+ * Class generated from <tt>packet/MetaTag.msg:21</tt> by opp_msgtool.
  * <pre>
  * class MetaTag extends TagBase
  * {
@@ -74,5 +74,5 @@ template<> inline inet::MetaTag *fromAnyPtr(any_ptr ptr) { return check_and_cast
 
 }  // namespace omnetpp
 
-#endif // ifndef __INET_META_TAG_M_H
+#endif // ifndef __INET_METATAG_M_H
 
