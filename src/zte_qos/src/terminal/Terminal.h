@@ -1,9 +1,9 @@
+#ifndef __ZTE_TERMINAL_H
+#define __ZTE_TERMINAL_H
+
 #include <omnetpp.h>
 
 using namespace omnetpp;
-
-#ifndef __ZTE_TERMINAL_H
-#define __ZTE_TERMINAL_H
 
 namespace zte_qos {
 namespace terminal {

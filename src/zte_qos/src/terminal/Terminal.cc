@@ -15,7 +15,7 @@ void Terminal::initialize() {
     // send a ping packet if she is the sender
     if (strcmp("sender", getName()) == 0) {
         // create a packet of size=100Mb and tos=1 as a packet tag
-        int tos = 114514;
+        int tos = 1;
         std::string title = "ping_tos_" + std::to_string(tos);
         auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(2));
         auto packet = new inet::Packet(title.c_str(), data);

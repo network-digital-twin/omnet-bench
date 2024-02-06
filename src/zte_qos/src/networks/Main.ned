@@ -18,6 +18,7 @@ package zte_qos.networks;
 import zte_qos.terminal.Terminal;
 import zte_qos.pipeline.RedQueue;
 import inet.queueing.common.PacketDelayer;
+import inet.queueing.classifier.PacketClassifier;
 import inet.queueing.server.TokenBasedServer;
 import inet.queueing.tokengenerator.TimeBasedTokenGenerator;
 import inet.queueing.sink.PassivePacketSink;
@@ -31,6 +32,18 @@ network ZteNet
         sender: Terminal {
             @display("p=68,232");
         }
+        // test
+        senderX: Terminal {
+            @display("p=112.14,111.13875");
+        }
+        classifier: PacketClassifier {
+            classifierClass = "zte_qos::pipeline::classifier::Tos2QosClassifier";
+            @display("p=243.30374,148.185");
+        }
+        sinks[3]: PassivePacketSink {
+            @display("p=366.4575,148.185,c,50");
+        }
+        //
         inChan: PacketDelayer {
             @display("p=190,232");
         }
@@ -52,11 +65,17 @@ network ZteNet
         }
     connections allowunconnected:
         // sender --> priority
-        sender.out --> inChan.in;
+        senderX.out --> inChan.in;
         inChan.out --> priority.in;
         // priority --> shaper
         priority.out --> shaper.in;
         // shaper --> receiver
         shaper.out --> outChan.in;
         outChan.out --> receiver.in;
+
+        // test
+        sender.out --> {  datarate = 16bps; } --> classifier.in;
+        classifier.out++ --> sinks[0].in;
+        classifier.out++ --> sinks[1].in;
+        classifier.out++ --> sinks[2].in;
 }
