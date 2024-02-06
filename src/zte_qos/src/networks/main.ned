@@ -16,84 +16,46 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
+import zte_qos.pipeline.RedQueue;
 import inet.queueing.common.PacketDelayer;
-import inet.queueing.classifier.SingleRateThreeColorClassifier;
-import inet.queueing.filter.RedDropper;
-import inet.queueing.common.PacketMultiplexer;
-import inet.queueing.sink.PassivePacketSink;
-import inet.queueing.queue.PacketQueue;
 import inet.queueing.server.TokenBasedServer;
 import inet.queueing.tokengenerator.TimeBasedTokenGenerator;
+import inet.queueing.sink.PassivePacketSink;
 
 // ZteNet is the main benchmark network.
 network ZteNet
 {
     parameters:
-        double redWq = default(0.002);
-        @display("bgb=1277,490");
+        @display("bgb=797,456");
     submodules:
         sender: Terminal {
-            @display("p=56,232");
+            @display("p=68,232");
         }
         inChan: PacketDelayer {
-            @display("p=178,232");
+            @display("p=190,232");
         }
-        srTcm: SingleRateThreeColorClassifier {
-            bitsPerToken = 1;
-            @display("p=300,232");
-        }
-        redG: RedDropper {
-            collectionModule = "^.queue";
-            wq = parent.redWq;
-            minth = 50;
-            maxth = 100;
-            maxp = 0.3;
-            @display("p=511,232");
-        }
-        redY: RedDropper {
-            collectionModule = "^.queue";
-            wq = parent.redWq;
-            minth = 30;
-            maxth = 60;
-            maxp = 0.6;
-            @display("p=511,305");
-        }
-        mux: PacketMultiplexer {
-            @display("p=642,232");
-        }
-        sink: PassivePacketSink {
-            @display("p=511,157");
-        }
-        queue: PacketQueue {
-            @display("p=795,232");
+        priority: RedQueue {
+            @display("p=321,232");
         }
         shaper: TokenBasedServer {
-            @display("p=952,232");
+            @display("p=461,232");
         }
         tokenGen: TimeBasedTokenGenerator {
             storageModule = "^.shaper";
-            @display("p=952,62");
+            @display("p=461,85");
         }
         outChan: PacketDelayer {
-            @display("p=1085,232");
+            @display("p=594,232");
         }
         receiver: PassivePacketSink {
-            @display("p=1217,232");
+            @display("p=726,232");
         }
     connections allowunconnected:
-        // sender -> meter
+        // sender --> priority
         sender.out --> inChan.in;
-        inChan.out --> srTcm.in;
-        // meter -> dropper
-        srTcm.out++ --> { @display("ls=green"); } --> redG.in;
-        srTcm.out++ --> { @display("ls=yellow"); } --> redY.in;
-        srTcm.out++ --> { @display("ls=red"); } --> sink.in;
-        // dropper --mux--> queue
-        redG.out --> mux.in++;
-        redY.out --> mux.in++;
-        mux.out --> queue.in;
-        // queue --> shaper
-        queue.out --> shaper.in;
+        inChan.out --> priority.in;
+        // priority --> shaper
+        priority.out --> shaper.in;
         // shaper --> receiver
         shaper.out --> outChan.in;
         outChan.out --> receiver.in;
