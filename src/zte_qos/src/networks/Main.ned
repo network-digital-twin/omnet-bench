@@ -19,6 +19,7 @@ import zte_qos.terminal.Terminal;
 import zte_qos.pipeline.RedQueue;
 import inet.queueing.common.PacketDelayer;
 import inet.queueing.classifier.PacketClassifier;
+import inet.queueing.scheduler.PriorityScheduler;
 import inet.queueing.server.TokenBasedServer;
 import inet.queueing.tokengenerator.TimeBasedTokenGenerator;
 import inet.queueing.sink.PassivePacketSink;
@@ -27,55 +28,59 @@ import inet.queueing.sink.PassivePacketSink;
 network ZteNet
 {
     parameters:
-        @display("bgb=797,456");
+        @display("bgb=936.1687,455.56873");
     submodules:
         sender: Terminal {
-            @display("p=68,232");
-        }
-        // test
-        senderX: Terminal {
-            @display("p=112.14,111.13875");
+            @display("p=47.05875,231.28874");
         }
         classifier: PacketClassifier {
             classifierClass = "zte_qos::pipeline::classifier::Tos2QosClassifier";
-            @display("p=243.30374,148.185");
+            @display("p=243.30374,231.28874");
         }
-        sinks[3]: PassivePacketSink {
-            @display("p=366.4575,148.185,c,50");
-        }
-        //
         inChan: PacketDelayer {
-            @display("p=190,232");
+            @display("p=145.18124,231.28874");
         }
-        priority: RedQueue {
-            @display("p=321,232");
+        priority0: RedQueue {
+            @display("p=350.4375,142.17749");
+        }
+        priority1: RedQueue {
+            @display("p=350.4375,231.28874");
+        }
+        priority2: RedQueue {
+            @display("p=350.4375,319.39874");
+        }
+        scheduler: PriorityScheduler {
+            @display("p=504.63,231.28874");
         }
         shaper: TokenBasedServer {
-            @display("p=461,232");
+            @display("i=block/bucket;p=665.83124,231.28874");
+            @display("p=665.83124,231.28874");
         }
         tokenGen: TimeBasedTokenGenerator {
             storageModule = "^.shaper";
-            @display("p=461,85");
+            @display("p=665.83124,84.104996");
         }
         outChan: PacketDelayer {
-            @display("p=594,232");
+            @display("p=780.975,231.28874");
         }
         receiver: PassivePacketSink {
-            @display("p=726,232");
+            @display("p=890.1112,231.28874");
         }
     connections allowunconnected:
-        // sender --> priority
-        senderX.out --> inChan.in;
-        inChan.out --> priority.in;
-        // priority --> shaper
-        priority.out --> shaper.in;
+        // sender --> classifier
+        sender.out --> inChan.in;
+        inChan.out --> classifier.in;
+        // classifier --> priority
+        classifier.out++ --> priority0.in;
+        classifier.out++ --> priority1.in;
+        classifier.out++ --> priority2.in;
+        // priority --> scheduler
+        priority0.out --> scheduler.in++;
+        priority1.out --> scheduler.in++;
+        priority2.out --> scheduler.in++;
+        // scheduler --> shaper
+        scheduler.out --> shaper.in;
         // shaper --> receiver
         shaper.out --> outChan.in;
         outChan.out --> receiver.in;
-
-        // test
-        sender.out --> {  datarate = 16bps; } --> classifier.in;
-        classifier.out++ --> sinks[0].in;
-        classifier.out++ --> sinks[1].in;
-        classifier.out++ --> sinks[2].in;
 }
