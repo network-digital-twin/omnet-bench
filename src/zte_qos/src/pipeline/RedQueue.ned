@@ -24,7 +24,7 @@ import inet.queueing.queue.PacketQueue;
 module RedQueue
 {
     parameters:
-        double redWq = default(0.002);
+        double wq = default(0.002);
         // redG
         double minthG = default(50);
         double maxthG = default(100);
@@ -44,7 +44,7 @@ module RedQueue
         }
         redG: RedDropper {
             collectionModule = "^.queue";
-            wq = parent.redWq;
+            wq = parent.wq;
             minth = parent.minthG;
             maxth = parent.maxthG;
             maxp = parent.maxpG;
@@ -52,7 +52,7 @@ module RedQueue
         }
         redY: RedDropper {
             collectionModule = "^.queue";
-            wq = parent.redWq;
+            wq = parent.wq;
             minth = parent.minthY;
             maxth = parent.maxthY;
             maxp = parent.maxpY;
