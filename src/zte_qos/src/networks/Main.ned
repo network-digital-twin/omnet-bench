@@ -23,11 +23,9 @@ import inet.queueing.sink.PassivePacketSink;
 // ZteNet is the main benchmark network.
 network ZteNet
 {
-    parameters:
-        @display("bgb=830.725,244.4");
     submodules:
-        sender: Terminal {
-            @display("p=81.075,115.149994");
+        sender[2]: Terminal {
+            @display("p=81.075,115.149994,c,100");
         }
         inChan: PacketDelayer {
             @display("p=237.34999,115.149994");
@@ -38,14 +36,16 @@ network ZteNet
         outChan: PacketDelayer {
             @display("p=568.7,115.149994");
         }
-        receiver: PassivePacketSink {
-            @display("p=736.725,115.149994");
+        receiver[2]: PassivePacketSink {
+            @display("p=736.725,115.149994,c,100");
         }
     connections allowunconnected:
         // sender --> switch
-        sender.out --> inChan.in;
-        inChan.out --> switch.in;
+        sender[0].out --> inChan.in;
+        inChan.out --> switch.in++;
+        sender[1].out --> switch.in++;
         // switch --> receiver
-        switch.out --> outChan.in;
-        outChan.out --> receiver.in;
+        switch.out++ --> outChan.in;
+        outChan.out --> receiver[0].in;
+        switch.out++ --> receiver[1].in;
 }
