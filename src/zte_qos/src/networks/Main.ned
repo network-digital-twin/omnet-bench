@@ -16,7 +16,7 @@
 package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
-import zte_qos.pipeline.QosPipeline;
+import zte_qos.switch.Switch;
 import inet.queueing.common.PacketDelayer;
 import inet.queueing.sink.PassivePacketSink;
 
@@ -32,8 +32,7 @@ network ZteNet
         inChan: PacketDelayer {
             @display("p=237.34999,115.149994");
         }
-        // TODO: move to switch inside a compound module
-        qosPipeline: QosPipeline {
+        switch: Switch {
             @display("p=411.25,115.149994");
         }
         outChan: PacketDelayer {
@@ -43,10 +42,10 @@ network ZteNet
             @display("p=736.725,115.149994");
         }
     connections allowunconnected:
-        // sender --> qos
+        // sender --> switch
         sender.out --> inChan.in;
-        inChan.out --> qosPipeline.in;
-        // qos --> receiver
-        qosPipeline.out --> outChan.in;
+        inChan.out --> switch.in;
+        // switch --> receiver
+        switch.out --> outChan.in;
         outChan.out --> receiver.in;
 }
