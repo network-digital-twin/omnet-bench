@@ -12,6 +12,7 @@ namespace terminal {
 Define_Module(Terminal);
 
 void Terminal::initialize() {
+    // TODO: self-message to sendDirect in handleMessage
     // send a ping packet if she is the sender
     if (strcmp("sender", getName()) == 0) {
         // create a packet of size=100Mb and tos=1 as a packet tag
@@ -30,6 +31,7 @@ void Terminal::initialize() {
 }
 
 void Terminal::handleMessage(cMessage *msg) {
+    // TODO: if self-message, sendDirect all packets with duration=xxs and propagationDelay=0.
     // reply if she is the receiver
     if (strcmp("receiver", getName()) == 0) {
         auto recvPkt = check_and_cast<inet::Packet*>(msg);
