@@ -29,6 +29,6 @@ network PingPong
             @display("p=372,194");
         }
     connections allowunconnected:
-        sender.out --> {  datarate = 100Mbps; delay = 100us; } --> receiver.in;
-        receiver.out --> {  datarate = 200Mbps; delay = 50us; } --> sender.in;
+        sender.out --> {  datarate = 8bps; delay = 100us; } --> receiver.in;
+        receiver.out --> {  datarate = 8bps; delay = 50us; } --> sender.in;
 }

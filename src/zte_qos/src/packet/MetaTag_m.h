@@ -33,7 +33,10 @@ namespace inet {
  * <pre>
  * class MetaTag extends TagBase
  * {
- *     int tos;
+ *     int tos;		// type of service
+ *     int src;		// source ID
+ *     int dst;		// destination ID
+ *     int numBytes;	// number of data bytes
  * }
  * </pre>
  */
@@ -41,6 +44,9 @@ class MetaTag : public ::inet::TagBase
 {
   protected:
     int tos = 0;
+    int src = 0;
+    int dst = 0;
+    int numBytes = 0;
 
   private:
     void copy(const MetaTag& other);
@@ -59,6 +65,15 @@ class MetaTag : public ::inet::TagBase
 
     virtual int getTos() const;
     virtual void setTos(int tos);
+
+    virtual int getSrc() const;
+    virtual void setSrc(int src);
+
+    virtual int getDst() const;
+    virtual void setDst(int dst);
+
+    virtual int getNumBytes() const;
+    virtual void setNumBytes(int numBytes);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const MetaTag& obj) {obj.parsimPack(b);}

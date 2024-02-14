@@ -19,5 +19,8 @@ namespace inet;
 
 class MetaTag extends TagBase
 {
-    int tos;
+    int tos;		// type of service
+    int src;		// source ID
+    int dst;		// destination ID
+    int numBytes;	// number of data bytes
 }
