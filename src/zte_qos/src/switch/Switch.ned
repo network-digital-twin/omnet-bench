@@ -25,6 +25,7 @@ module Switch
         int sid = default(-1);
         @display("i=device/accesspoint");
     gates:
+        input tIn;	// entrance for terminal
         input in[];
         output out[];
     submodules:
@@ -39,6 +40,7 @@ module Switch
         }
     connections allowunconnected:
         // in --> routeSel
+        tIn --> { @display("m=n;t=tIn"); } --> mux.in++;
         for i=0..sizeof(in)-1 {
             in[i] --> { @display("m=w"); } --> mux.in++;
         }
