@@ -33,20 +33,24 @@ namespace inet {
  * <pre>
  * class MetaTag extends TagBase
  * {
+ *     int pid;		// packet id
  *     int tos;		// type of service
  *     int src;		// source ID
  *     int dst;		// destination ID
  *     int numBytes;	// number of data bytes
+ *     double ts;		// timstamp to send
  * }
  * </pre>
  */
 class MetaTag : public ::inet::TagBase
 {
   protected:
+    int pid = 0;
     int tos = 0;
     int src = 0;
     int dst = 0;
     int numBytes = 0;
+    double ts = 0;
 
   private:
     void copy(const MetaTag& other);
@@ -63,6 +67,9 @@ class MetaTag : public ::inet::TagBase
     virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
+    virtual int getPid() const;
+    virtual void setPid(int pid);
+
     virtual int getTos() const;
     virtual void setTos(int tos);
 
@@ -74,6 +81,9 @@ class MetaTag : public ::inet::TagBase
 
     virtual int getNumBytes() const;
     virtual void setNumBytes(int numBytes);
+
+    virtual double getTs() const;
+    virtual void setTs(double ts);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const MetaTag& obj) {obj.parsimPack(b);}
