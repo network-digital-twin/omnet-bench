@@ -19,7 +19,7 @@ inet::Packet* genPacket(int pid, int tos, int src, int dst, int numBytes, double
 class Terminal: public cSimpleModule {
 protected:
     cMessage *genMsg;
-    std::string traceFile = "dataset/test/trace.txt";
+    std::string traceFile;
 protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;

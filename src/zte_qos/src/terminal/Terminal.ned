@@ -20,8 +20,10 @@ package zte_qos.terminal;
 //
 simple Terminal
 {
-    @class(zte_qos::terminal::Terminal);
-    @display("i=device/antennatower");
+    parameters:
+        string traceFile;
+        @class(zte_qos::terminal::Terminal);
+        @display("i=device/antennatower");
     // TODO: remove gates
     gates:
         input in;
