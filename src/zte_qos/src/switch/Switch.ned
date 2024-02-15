@@ -18,6 +18,7 @@ package zte_qos.switch;
 import zte_qos.switch.routing.RouteSelector;
 import zte_qos.pipeline.QosPipeline;
 import inet.queueing.common.PacketMultiplexer;
+import inet.queueing.sink.PassivePacketSink;
 
 module Switch
 {
@@ -33,7 +34,11 @@ module Switch
             @display("p=85.36,79.2");
         }
         routeSel: RouteSelector {
+            sid = parent.sid;
             @display("p=186.56,78.32");
+        }
+        sink: PassivePacketSink {
+            @display("p=186,175");
         }
         qos[sizeof(out)]: QosPipeline {
             @display("p=330.88,77.44,c,100");
@@ -50,4 +55,8 @@ module Switch
             routeSel.out++ --> qos[i].in;
             qos[i].out --> { @display("m=e"); } --> out[i];
         }
+        // routeSel --> sink (as dst, index N-1)
+        routeSel.out++ --> sink.in;
+
+
 }
