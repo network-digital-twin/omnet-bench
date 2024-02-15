@@ -19,8 +19,8 @@ import zte_qos.terminal.Terminal;
 import zte_qos.switch.Switch;
 import inet.queueing.common.PacketDelayer;
 
-// ZteNet is the main benchmark network.
-network ZteNet
+// TestNet is a small-scale network for testing module functionalities.
+network TestNet
 {
     submodules:
         // terminal
