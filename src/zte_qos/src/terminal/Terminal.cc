@@ -40,7 +40,7 @@ void Terminal::initialize() {
 void Terminal::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg == genMsg) {
         // sendDirect all packets with duration=xx and propagationDelay=0 (unit = second).
-        EV << "Terminal: generating packets.\n";
+        EV << "Terminal: generating packets." << "\n";
         scheduleSendToSwitch(genPacket(666666, 0, 0, 1, 2, 0.5));
     } else {
         error("unsupported message for terminal.");
