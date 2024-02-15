@@ -15,10 +15,12 @@
 
 package zte_qos.switch.routing;
 
-import inet.queueing.classifier.PacketClassifier;
+import inet.queueing.base.PacketClassifierBase;
+import inet.queueing.contract.IPacketClassifier;
 
-module RouteSelector extends PacketClassifier
+simple RouteSelector extends PacketClassifierBase like IPacketClassifier
 {
     parameters:
-        classifierClass = "zte_qos::switch_dvc::routing::RouteSelector";
+        int sid = default(-1);	// switch_id
+        @class(zte_qos::switch_dvc::routing::RouteSelector);
 }

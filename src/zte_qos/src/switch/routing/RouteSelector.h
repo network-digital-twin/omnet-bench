@@ -2,16 +2,18 @@
 #define __ZTE_SWITCH_ROUTESEL_H
 
 #include <omnetpp.h>
-#include "inet/queueing/contract/IPacketClassifierFunction.h"
+#include "inet/queueing/base/PacketClassifierBase.h"
 
 namespace zte_qos {
 namespace switch_dvc {
 namespace routing {
 
-class RouteSelector : public omnetpp::cObject, public inet::queueing::IPacketClassifierFunction
-{
-public:
-    virtual int classifyPacket(inet::Packet *packet) const override;
+class RouteSelector: public inet::queueing::PacketClassifierBase {
+protected:
+    int sid;    // switch id
+protected:
+    virtual void initialize(int stage) override;
+    virtual int classifyPacket(inet::Packet *packet) override;
 };
 
 } // namespace routing
