@@ -1,3 +1,5 @@
+#include <fstream>
+#include <sstream>
 #include "packet/MetaTag_m.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
@@ -31,17 +33,52 @@ void Terminal::scheduleSendToSwitch(inet::Packet *pkt) {
     sendDirect(pkt, 0, tag->getTs(), targetGate);
 }
 
+void Terminal::generateTrace() {
+    std::ifstream trace;
+    trace.open(traceFile);
+    if (trace.is_open()) {
+        std::string line;
+        std::string item;
+        int pid;
+        int tos;
+        int src;
+        int dst;
+        int numBytes;
+        double ts;
+        while (std::getline(trace, line)) {
+            // header line: skip
+            if (line[0] == '#') {
+                continue;
+            }
+            // decode line
+            std::istringstream iss(line);
+            std::getline(iss, item, ' ');   // id
+            pid = std::stoi(item);
+            std::getline(iss, item, ' ');   // tos
+            tos = std::stoi(item);
+            std::getline(iss, item, ' ');   // src
+            src = std::stoi(item);
+            std::getline(iss, item, ' ');   // dst
+            dst = std::stoi(item);
+            std::getline(iss, item, ' ');   // size
+            numBytes = std::stoi(item);
+            std::getline(iss, item, ' ');   // timestamp
+            ts = std::stod(item);
+            // construct and send packet
+            scheduleSendToSwitch(genPacket(pid, tos, src, dst, numBytes, ts));
+        }
+    }
+}
+
 void Terminal::initialize() {
     // self-message to sendDirect in handleMessage
-    genMsg = new cMessage("GEN");
+    genMsg = new cMessage("T_GEN");
     scheduleAt(0, genMsg);
 }
 
 void Terminal::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg == genMsg) {
-        // sendDirect all packets with duration=xx and propagationDelay=0 (unit = second).
-        EV << "Terminal: generating packets." << "\n";
-        scheduleSendToSwitch(genPacket(666666, 0, 0, 1, 2, 0.5));
+        generateTrace();
     } else {
         error("unsupported message for terminal.");
     }

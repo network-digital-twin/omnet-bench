@@ -19,7 +19,8 @@ inet::Packet* genPacket(int pid, int tos, int src, int dst, int numBytes, double
 class Terminal: public cSimpleModule {
 protected:
     cMessage *genMsg;
-
+    std::string traceFile = "dataset/test/trace.txt";
+protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
     virtual void finish() override;
@@ -29,6 +30,11 @@ protected:
      * Relevant information should have been included in the MetaTag of the packet.
      */
     void scheduleSendToSwitch(inet::Packet *pkt);
+
+    /***
+     * generateTrace generates and delivers packets from the specified trace file.
+     */
+    void generateTrace();
 };
 
 } // namespace terminal
