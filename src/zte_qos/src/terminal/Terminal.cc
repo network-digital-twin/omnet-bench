@@ -1,4 +1,3 @@
-#include <iostream>
 #include "packet/MetaTag_m.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
@@ -9,45 +8,47 @@ using namespace omnetpp;
 namespace zte_qos {
 namespace terminal {
 
+inet::Packet* genPacket(int pid, int tos, int src, int dst, int numBytes, double ts) {
+    std::string title = "p_" + std::to_string(pid) + "_" + std::to_string(src) + "~" + std::to_string(dst) + "_tos=" + std::to_string(tos);
+    auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(numBytes));
+    auto packet = new inet::Packet(title.c_str(), data);
+    auto metaTag = packet->addTag<inet::MetaTag>();
+    metaTag->setPid(pid);
+    metaTag->setTos(tos);
+    metaTag->setSrc(src);
+    metaTag->setDst(dst);
+    metaTag->setNumBytes(numBytes);
+    metaTag->setTs(ts);
+    return packet;
+}
+
 Define_Module(Terminal);
 
+void Terminal::scheduleSendToSwitch(inet::Packet *pkt) {
+    auto tag = pkt->getTag<inet::MetaTag>();
+    std::string switchName = "s_" + std::to_string(tag->getSrc());
+    auto targetGate = getSimulation()->getSystemModule()->getSubmodule(switchName.c_str())->gate("tIn");
+    sendDirect(pkt, 0, tag->getTs(), targetGate);
+}
+
 void Terminal::initialize() {
-    // TODO: self-message to sendDirect in handleMessage
-    // send a ping packet if she is the sender
-    if (strcmp("sender", getName()) == 0) {
-        // create a packet of size=100Mb and tos=1 as a packet tag
-        int tos = 1;
-        int numBytes = 2;
-        std::string title = "ping_tos_" + std::to_string(tos);
-        auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(numBytes));
-        auto packet = new inet::Packet(title.c_str(), data);
-        auto metaTag = packet->addTag<inet::MetaTag>();
-        metaTag->setTos(tos);
-        metaTag->setSrc(12);
-        metaTag->setDst(21);
-        metaTag->setNumBytes(numBytes);
-        send(packet, "out");
-    }
+    // self-message to sendDirect in handleMessage
+    genMsg = new cMessage("GEN");
+    scheduleAt(0, genMsg);
 }
 
 void Terminal::handleMessage(cMessage *msg) {
-    // TODO: if self-message, sendDirect all packets with duration=xxs and propagationDelay=0.
-    // reply if she is the receiver
-    if (strcmp("receiver", getName()) == 0) {
-        auto recvPkt = check_and_cast<inet::Packet*>(msg);
-        auto recvTag = recvPkt->getTag<inet::MetaTag>();
-        int tos = recvTag->getTos() * 100;
-        int numBytes = recvTag->getNumBytes() * 2;  // 4
-        std::string title = "pong_tos_" + std::to_string(tos);
-        auto data = inet::makeShared<inet::ByteCountChunk>(inet::B(numBytes));
-        auto packet = new inet::Packet(title.c_str(), data);
-        auto newTag = packet->addTag<inet::MetaTag>();
-        newTag->setTos(tos);
-        newTag->setSrc(recvTag->getSrc() * 3);  // 36
-        newTag->setDst(recvTag->getDst() * 4);  // 84
-        newTag->setNumBytes(numBytes);
-        sendDelayed(packet, 3, "out");
+    if (msg->isSelfMessage() && msg == genMsg) {
+        // sendDirect all packets with duration=xx and propagationDelay=0 (unit = second).
+        EV << "Terminal: generating packets.\n";
+        scheduleSendToSwitch(genPacket(666666, 0, 0, 1, 2, 0.5));
+    } else {
+        error("unsupported message for terminal.");
     }
+}
+
+void Terminal::finish() {
+    delete genMsg;
 }
 
 } // namespace terminal

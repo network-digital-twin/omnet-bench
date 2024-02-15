@@ -15,11 +15,14 @@
 
 package zte_qos.terminal;
 
+//
 // Terminal generates packets and sends them to the corresponding switches.
+//
 simple Terminal
 {
     @class(zte_qos::terminal::Terminal);
-    @display("i=device/laptop");
+    @display("i=device/antennatower");
+    // TODO: remove gates
     gates:
         input in;
         output out;
