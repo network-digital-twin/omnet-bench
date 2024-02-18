@@ -61,7 +61,7 @@ module RedQueue
         mux: PacketMultiplexer {
             @display("p=436,175");
         }
-        sink: PassivePacketSink {
+        dropSink: PassivePacketSink {
             @display("p=305,100");
         }
         queue: PacketQueue {
@@ -73,7 +73,7 @@ module RedQueue
         // meter -> dropper
         srTcm.out++ --> { @display("ls=green"); } --> redG.in;
         srTcm.out++ --> { @display("ls=yellow"); } --> redY.in;
-        srTcm.out++ --> { @display("ls=red"); } --> sink.in;
+        srTcm.out++ --> { @display("ls=red"); } --> dropSink.in;
         // dropper --mux--> queue
         redG.out --> mux.in++;
         redY.out --> mux.in++;

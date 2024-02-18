@@ -37,7 +37,7 @@ module Switch
             sid = parent.sid;
             @display("p=186.56,78.32");
         }
-        sink: PassivePacketSink {
+        dstSink: PassivePacketSink {
             @display("p=186,175");
         }
         qos[sizeof(out)]: QosPipeline {
@@ -56,7 +56,7 @@ module Switch
             qos[i].out --> { @display("m=e"); } --> out[i];
         }
         // routeSel --> sink (as dst, index N-1)
-        routeSel.out++ --> sink.in;
+        routeSel.out++ --> dstSink.in;
 
 
 }
