@@ -57,6 +57,4 @@ module Switch
         }
         // routeSel --> sink (as dst, index N-1)
         routeSel.out++ --> dstSink.in;
-
-
 }
