@@ -22,5 +22,6 @@ simple RouteSelector extends PacketClassifierBase like IPacketClassifier
 {
     parameters:
         int sid = default(-1);	// switch_id
+        string infoFile;
         @class(zte_qos::switch_dvc::routing::RouteSelector);
 }

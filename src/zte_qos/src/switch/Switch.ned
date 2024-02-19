@@ -24,6 +24,7 @@ module Switch
 {
     parameters:
         int sid = default(-1);
+        string infoFile;
         @display("i=device/accesspoint");
     gates:
         input tIn;	// entrance for terminal
@@ -35,6 +36,7 @@ module Switch
         }
         routeSel: RouteSelector {
             sid = parent.sid;
+            infoFile = parent.infoFile;
             @display("p=186.56,78.32");
         }
         dstSink: PassivePacketSink {
