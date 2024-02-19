@@ -13,22 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package zte_qos.networks;
+package zte_qos.switch.routing;
 
-import zte_qos.terminal.Terminal;
+import inet.queueing.base.PacketClassifierBase;
+import inet.queueing.contract.IPacketClassifier;
 
-// PingPong is a Terminal - Terminal ping pong testing network.
-network PingPong
+simple RouteSelector extends PacketClassifierBase like IPacketClassifier
 {
-    @display("bgb=453,393");
-    submodules:
-        sender: Terminal {
-            @display("p=80,194");
-        }
-        receiver: Terminal {
-            @display("p=372,194");
-        }
-    connections allowunconnected:
-        sender.out --> {  datarate = 100Mbps; delay = 100us; } --> receiver.in;
-        receiver.out --> {  datarate = 200Mbps; delay = 50us; } --> sender.in;
+    parameters:
+        int sid = default(-1);	// switch_id
+        string infoFile;
+        @class(zte_qos::switch_dvc::routing::RouteSelector);
 }

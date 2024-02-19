@@ -19,8 +19,8 @@ import zte_qos.terminal.Terminal;
 import zte_qos.switch.Switch;
 import inet.queueing.common.PacketDelayer;
 
-// ZteNet is the main benchmark network.
-network ZteNet
+// TestNet is a small-scale network for testing module functionalities.
+network TestNet
 {
     submodules:
         // terminal
@@ -39,21 +39,23 @@ network ZteNet
             @display("p=255,142");
         }
         // links
-        l_0_1: PacketDelayer {
+        l_0_1__0: PacketDelayer {
             bitrate = 32bps;
             delay = 10us;
             @display("is=vs;p=152,57");
+            @metadata(srcPort="port_0_1__0");
         }
-        l_0_2: PacketDelayer {
+        l_0_2__0: PacketDelayer {
             bitrate = 32bps;
             delay = 10us;
             @display("is=vs;p=149,142");
+            @metadata(srcPort="port_0_2__0");
         }
     connections allowunconnected:
         // s_0 --> s_1
-        s_0.out++ --> l_0_1.in;
-        l_0_1.out --> s_1.in++;
+        s_0.out++ --> l_0_1__0.in;
+        l_0_1__0.out --> s_1.in++;
         // s_0 --> s_1
-        s_0.out++ --> l_0_2.in;
-        l_0_2.out --> s_2.in++;
+        s_0.out++ --> l_0_2__0.in;
+        l_0_2__0.out --> s_2.in++;
 }
