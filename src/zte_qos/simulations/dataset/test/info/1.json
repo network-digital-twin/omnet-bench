@@ -1,0 +1,9 @@
+{
+  "ports": {
+    "port_1_0__0": 32.0
+  },
+  "qos": null,
+  "routing": {},
+  "terminals": null,
+  "type": "Access"
+}

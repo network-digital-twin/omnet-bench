@@ -4,3 +4,6 @@ out/
 # simulations
 simulations/.cmdenv-log
 simulations/results/
+
+# generated network NED files
+src/networks/gen/

@@ -17,11 +17,15 @@ package zte_qos.networks;
 
 import zte_qos.terminal.Terminal;
 import zte_qos.switch.Switch;
-import inet.queueing.common.PacketDelayer;
+import zte_qos.link.Link;
 
 // TestNet is a small-scale network for testing module functionalities.
 network TestNet
 {
+    parameters:
+        string dataDir = "dataset/test/";
+       	t.traceFile = dataDir + "trace.txt";
+       	s_*.infoDir = dataDir + "info/";
     submodules:
         // terminal
         t: Terminal;
@@ -39,16 +43,16 @@ network TestNet
             @display("p=255,142");
         }
         // links
-        l_0_1__0: PacketDelayer {
+        l_0_1__0: Link {
             bitrate = 32bps;
             delay = 10us;
-            @display("is=vs;p=152,57");
+            @display("p=152,57");
             @metadata(srcPort="port_0_1__0");
         }
-        l_0_2__0: PacketDelayer {
+        l_0_2__0: Link {
             bitrate = 32bps;
             delay = 10us;
-            @display("is=vs;p=149,142");
+            @display("p=149,142");
             @metadata(srcPort="port_0_2__0");
         }
     connections allowunconnected:

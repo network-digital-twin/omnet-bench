@@ -1,0 +1,19 @@
+{
+  "ports": {
+    "port_0_1__0": 32.0,
+    "port_0_2__0": 32.0
+  },
+  "qos": null,
+  "routing": {
+    "1": {
+      "next_hop": 1,
+      "port": "port_0_1__0"
+    },
+    "2": {
+      "next_hop": 2,
+      "port": "port_0_2__0"
+    }
+  },
+  "terminals": null,
+  "type": "Access"
+}
