@@ -49,7 +49,7 @@ class Switch:
 
 
 class Link:
-    DELAY_DEFAULT = 10  # propagation delay - us
+    DELAY_DEFAULT: float = 10  # propagation delay - us
 
     """ Link model. """
     def __init__(self, src: Switch, src_port: str, dst: Switch, dst_port: str = None,
@@ -70,6 +70,20 @@ class Link:
             dst.port_bw[self.dst_port] if self.dst_port is not None else float('inf')
         )
         self.delay = delay
+
+    def to_ned(self, indent: int = 4) -> list[str]:
+        """
+        Return a list formatted string lines of the network link NED block.
+        :param indent: indent level
+        """
+        indent_str = ' ' * indent
+        return [
+            f'l_{self.src}_{self.dst}__{self.pair_id}: Link {{',
+            indent_str + f'bitrate = {self.bw}bps;',
+            indent_str + f'delay = {self.delay}us;',
+            indent_str + f'@metadata(srcPort="{self.src_port}");',
+            f'}}'
+        ]
 
     def __str__(self):
         return f'Link[{self.src}~{self.dst}][{self.pair_id}]'
@@ -122,10 +136,10 @@ class Network:
             for route in s.routing.values():
                 dst, src_port = route['next_hop'], route['port']
                 if src_port not in link_map[src][dst]:
-                    link_map[src][dst].add(src_port)
                     links.add(Link(src=switches[src], src_port=src_port,
                                    dst=switches[dst], dst_port=None,
                                    pair_id=len(link_map[src][dst])))
+                    link_map[src][dst].add(src_port)
         return switches, links
 
     def generate_ned(self, indent: int = 4) -> None:
@@ -199,7 +213,10 @@ class Network:
             indent_str + f't: Terminal;',
             # switches
             indent_str + f'// switches',
-            *[(indent_str + line) for line in itertools.chain(*[*[s.to_ned(indent) for s in self.switches.values()]])]
+            *[(indent_str + line) for line in itertools.chain(*[*[s.to_ned(indent) for s in self.switches.values()]])],
+            # links
+            indent_str + f'// links',
+            *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links]])],
         ]
 
     def __str__(self):
