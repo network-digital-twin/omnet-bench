@@ -46,13 +46,13 @@ network TestNet
         l_0_1__0: Link {
             bitrate = 32bps;
             delay = 10us;
-            @display("is=vs;p=152,57");
+            @display("p=152,57");
             @metadata(srcPort="port_0_1__0");
         }
         l_0_2__0: Link {
             bitrate = 32bps;
             delay = 10us;
-            @display("is=vs;p=149,142");
+            @display("p=149,142");
             @metadata(srcPort="port_0_2__0");
         }
     connections allowunconnected:

@@ -19,4 +19,5 @@ import inet.queueing.common.PacketDelayer;
 
 module Link extends PacketDelayer
 {
+    @display("is=vs");
 }
