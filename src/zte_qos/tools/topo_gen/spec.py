@@ -2,6 +2,7 @@ import os
 import json
 import itertools
 from pathlib import Path
+from typing import Tuple
 
 import yaml
 
@@ -47,7 +48,38 @@ class Switch:
         return self.__str__()
 
 
+class Link:
+    DELAY_DEFAULT = 10  # propagation delay - us
+
+    """ Link model. """
+    def __init__(self, src: Switch, src_port: str, dst: Switch, dst_port: str = None,
+                 pair_id: int = 0, delay: float = DELAY_DEFAULT) -> None:
+        self.src = src.id
+        self.src_port = src_port
+        if src_port not in src.port_bw.keys():
+            raise ValueError(f'Source port {src_port} is not in Switch {src.id}')
+        self.dst = dst.id
+        self.dst_port = dst_port
+        if dst_port is not None and dst_port not in dst.port_bw.keys():
+            raise ValueError(f'Destination port {dst_port} is not in Switch {dst.id}')
+        # may have multiple identical src-dst pairs - need a pair_id to differentiate
+        self.pair_id = pair_id
+        # minimum bandwidth of two end ports; if dst port not specified, uses src port bandwidth
+        self.bw = min(
+            src.port_bw[self.src_port],
+            dst.port_bw[self.dst_port] if self.dst_port is not None else float('inf')
+        )
+        self.delay = delay
+
+    def __str__(self):
+        return f'Link[{self.src}~{self.dst}][{self.pair_id}]'
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Network:
+    """ Network model. """
     NAME_DEFAULT = 'ZteNet'
     NED_DIR_DEFAULT = '../../src/networks/gen/'
     INI_DIR_DEFAULT = '../../simulations/'
@@ -69,17 +101,32 @@ class Network:
         self.out_dir = out_dir
         if not os.path.isdir(self.out_dir):
             os.makedirs(out_dir)
-        self.switches = self.load_topology()
+        self.switches, self.links = self.load_topology()
 
-    def load_topology(self) -> dict[int, Switch]:
-        """ Load topology as a dict of switch_id => switch from the info directory. """
-        res: dict[int, Switch] = {}
+    def load_topology(self) -> Tuple[dict[int, Switch], set[Link]]:
+        """ Load topology as a dict of switch_id => switch from the info directory, and a set of links. """
+        switches: dict[int, Switch] = {}
         for info_fn in os.listdir(self.info_dir):
             if not info_fn.endswith('.yaml'):
                 continue
             cur_switch = Switch(os.path.join(self.info_dir, info_fn))
-            res[cur_switch.id] = cur_switch
-        return res
+            switches[cur_switch.id] = cur_switch
+        links: set[Link] = set()
+        link_map: dict[int, dict[int, set[str]]] = {
+            src: {
+                dst: set() for dst in switches.keys()
+            } for src in switches.keys()
+        }
+        for s in switches.values():
+            src = s.id
+            for route in s.routing.values():
+                dst, src_port = route['next_hop'], route['port']
+                if src_port not in link_map[src][dst]:
+                    link_map[src][dst].add(src_port)
+                    links.add(Link(src=switches[src], src_port=src_port,
+                                   dst=switches[dst], dst_port=None,
+                                   pair_id=len(link_map[src][dst])))
+        return switches, links
 
     def generate_ned(self, indent: int = 4) -> None:
         """
