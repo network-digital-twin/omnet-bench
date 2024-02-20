@@ -18,6 +18,7 @@ if __name__ == '__main__':
                       name=FLAGS.net, description=FLAGS.description,
                       ini_dir=FLAGS.ini_dir, out_dir=FLAGS.out_dir)
     network.generate_ned()
+    # TODO: move this as a function into Network
     if FLAGS.json == 1:
         for s in network.switches.values():
             s.to_local_json(path=os.path.join(network.info_dir, f'{s.id}.json'))

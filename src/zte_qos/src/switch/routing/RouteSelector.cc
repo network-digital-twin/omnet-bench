@@ -9,6 +9,7 @@ Define_Module(RouteSelector);
 
 std::map<int, std::vector<std::string>> RouteSelector::loadRoutingInfo() {
     // TODO: read `infoFile` and get a map: dstId => [portId]
+    // Can switch on .yaml file and .json file, and implement json first for now
     // do sth here.
 
     // TODO: PoC, remove later

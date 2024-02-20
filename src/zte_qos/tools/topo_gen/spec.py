@@ -197,6 +197,7 @@ class Network:
         return [
             f'parameters:',
             indent_str + f't.traceFile = "{traceFileRel}";',
+            # TODO: specify infoFileType: as json when exporting .json files
             indent_str + f's_*.infoDir = "{infoDirRel}";'
         ]
 

@@ -25,6 +25,7 @@ module Switch
     parameters:
         int sid = default(-1);
         string infoDir = default("info/");
+        // TODO: parameterize infoFileType = "yaml" or "json"
         string infoFile = default(infoDir + string(sid) + ".yaml");
         @display("i=device/accesspoint");
     gates:
