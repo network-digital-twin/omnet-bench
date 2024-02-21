@@ -178,33 +178,36 @@ MetaTag& MetaTag::operator=(const MetaTag& other)
 void MetaTag::copy(const MetaTag& other)
 {
     this->pid = other.pid;
-    this->tos = other.tos;
+    this->mid = other.mid;
     this->src = other.src;
     this->dst = other.dst;
     this->numBytes = other.numBytes;
     this->ts = other.ts;
+    this->tos = other.tos;
 }
 
 void MetaTag::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::inet::TagBase::parsimPack(b);
     doParsimPacking(b,this->pid);
-    doParsimPacking(b,this->tos);
+    doParsimPacking(b,this->mid);
     doParsimPacking(b,this->src);
     doParsimPacking(b,this->dst);
     doParsimPacking(b,this->numBytes);
     doParsimPacking(b,this->ts);
+    doParsimPacking(b,this->tos);
 }
 
 void MetaTag::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::inet::TagBase::parsimUnpack(b);
     doParsimUnpacking(b,this->pid);
-    doParsimUnpacking(b,this->tos);
+    doParsimUnpacking(b,this->mid);
     doParsimUnpacking(b,this->src);
     doParsimUnpacking(b,this->dst);
     doParsimUnpacking(b,this->numBytes);
     doParsimUnpacking(b,this->ts);
+    doParsimUnpacking(b,this->tos);
 }
 
 int MetaTag::getPid() const
@@ -217,14 +220,14 @@ void MetaTag::setPid(int pid)
     this->pid = pid;
 }
 
-int MetaTag::getTos() const
+int MetaTag::getMid() const
 {
-    return this->tos;
+    return this->mid;
 }
 
-void MetaTag::setTos(int tos)
+void MetaTag::setMid(int mid)
 {
-    this->tos = tos;
+    this->mid = mid;
 }
 
 int MetaTag::getSrc() const
@@ -267,17 +270,28 @@ void MetaTag::setTs(double ts)
     this->ts = ts;
 }
 
+int MetaTag::getTos() const
+{
+    return this->tos;
+}
+
+void MetaTag::setTos(int tos)
+{
+    this->tos = tos;
+}
+
 class MetaTagDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
         FIELD_pid,
-        FIELD_tos,
+        FIELD_mid,
         FIELD_src,
         FIELD_dst,
         FIELD_numBytes,
         FIELD_ts,
+        FIELD_tos,
     };
   public:
     MetaTagDescriptor();
@@ -344,7 +358,7 @@ const char *MetaTagDescriptor::getProperty(const char *propertyName) const
 int MetaTagDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 6+base->getFieldCount() : 6;
+    return base ? 7+base->getFieldCount() : 7;
 }
 
 unsigned int MetaTagDescriptor::getFieldTypeFlags(int field) const
@@ -357,13 +371,14 @@ unsigned int MetaTagDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_pid
-        FD_ISEDITABLE,    // FIELD_tos
+        FD_ISEDITABLE,    // FIELD_mid
         FD_ISEDITABLE,    // FIELD_src
         FD_ISEDITABLE,    // FIELD_dst
         FD_ISEDITABLE,    // FIELD_numBytes
         FD_ISEDITABLE,    // FIELD_ts
+        FD_ISEDITABLE,    // FIELD_tos
     };
-    return (field >= 0 && field < 6) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MetaTagDescriptor::getFieldName(int field) const
@@ -376,13 +391,14 @@ const char *MetaTagDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "pid",
-        "tos",
+        "mid",
         "src",
         "dst",
         "numBytes",
         "ts",
+        "tos",
     };
-    return (field >= 0 && field < 6) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
 }
 
 int MetaTagDescriptor::findField(const char *fieldName) const
@@ -390,11 +406,12 @@ int MetaTagDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "pid") == 0) return baseIndex + 0;
-    if (strcmp(fieldName, "tos") == 0) return baseIndex + 1;
+    if (strcmp(fieldName, "mid") == 0) return baseIndex + 1;
     if (strcmp(fieldName, "src") == 0) return baseIndex + 2;
     if (strcmp(fieldName, "dst") == 0) return baseIndex + 3;
     if (strcmp(fieldName, "numBytes") == 0) return baseIndex + 4;
     if (strcmp(fieldName, "ts") == 0) return baseIndex + 5;
+    if (strcmp(fieldName, "tos") == 0) return baseIndex + 6;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -408,13 +425,14 @@ const char *MetaTagDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_pid
-        "int",    // FIELD_tos
+        "int",    // FIELD_mid
         "int",    // FIELD_src
         "int",    // FIELD_dst
         "int",    // FIELD_numBytes
         "double",    // FIELD_ts
+        "int",    // FIELD_tos
     };
-    return (field >= 0 && field < 6) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **MetaTagDescriptor::getFieldPropertyNames(int field) const
@@ -498,11 +516,12 @@ std::string MetaTagDescriptor::getFieldValueAsString(omnetpp::any_ptr object, in
     MetaTag *pp = omnetpp::fromAnyPtr<MetaTag>(object); (void)pp;
     switch (field) {
         case FIELD_pid: return long2string(pp->getPid());
-        case FIELD_tos: return long2string(pp->getTos());
+        case FIELD_mid: return long2string(pp->getMid());
         case FIELD_src: return long2string(pp->getSrc());
         case FIELD_dst: return long2string(pp->getDst());
         case FIELD_numBytes: return long2string(pp->getNumBytes());
         case FIELD_ts: return double2string(pp->getTs());
+        case FIELD_tos: return long2string(pp->getTos());
         default: return "";
     }
 }
@@ -520,11 +539,12 @@ void MetaTagDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field
     MetaTag *pp = omnetpp::fromAnyPtr<MetaTag>(object); (void)pp;
     switch (field) {
         case FIELD_pid: pp->setPid(string2long(value)); break;
-        case FIELD_tos: pp->setTos(string2long(value)); break;
+        case FIELD_mid: pp->setMid(string2long(value)); break;
         case FIELD_src: pp->setSrc(string2long(value)); break;
         case FIELD_dst: pp->setDst(string2long(value)); break;
         case FIELD_numBytes: pp->setNumBytes(string2long(value)); break;
         case FIELD_ts: pp->setTs(string2double(value)); break;
+        case FIELD_tos: pp->setTos(string2long(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'MetaTag'", field);
     }
 }
@@ -540,11 +560,12 @@ omnetpp::cValue MetaTagDescriptor::getFieldValue(omnetpp::any_ptr object, int fi
     MetaTag *pp = omnetpp::fromAnyPtr<MetaTag>(object); (void)pp;
     switch (field) {
         case FIELD_pid: return pp->getPid();
-        case FIELD_tos: return pp->getTos();
+        case FIELD_mid: return pp->getMid();
         case FIELD_src: return pp->getSrc();
         case FIELD_dst: return pp->getDst();
         case FIELD_numBytes: return pp->getNumBytes();
         case FIELD_ts: return pp->getTs();
+        case FIELD_tos: return pp->getTos();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'MetaTag' as cValue -- field index out of range?", field);
     }
 }
@@ -562,11 +583,12 @@ void MetaTagDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i,
     MetaTag *pp = omnetpp::fromAnyPtr<MetaTag>(object); (void)pp;
     switch (field) {
         case FIELD_pid: pp->setPid(omnetpp::checked_int_cast<int>(value.intValue())); break;
-        case FIELD_tos: pp->setTos(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_mid: pp->setMid(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_src: pp->setSrc(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_dst: pp->setDst(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_numBytes: pp->setNumBytes(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_ts: pp->setTs(value.doubleValue()); break;
+        case FIELD_tos: pp->setTos(omnetpp::checked_int_cast<int>(value.intValue())); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'MetaTag'", field);
     }
 }

@@ -20,9 +20,10 @@ namespace inet;
 class MetaTag extends TagBase
 {
     int pid;		// packet id
-    int tos;		// type of service
+    int mid;		// message id
     int src;		// source ID
     int dst;		// destination ID
     int numBytes;	// number of data bytes
-    double ts;		// timstamp to send
+    double ts;		// timstamp to send (unit: ns)
+    int tos;		// type of service
 }
