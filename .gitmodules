@@ -1,3 +1,6 @@
 [submodule "src/inet"]
 	path = src/inet
 	url = https://github.com/inet-framework/inet
+[submodule "src/zte_qos/src/json"]
+	path = src/zte_qos/src/json
+	url = https://github.com/nlohmann/json.git
