@@ -98,12 +98,27 @@ class Link:
 class Network:
     """ Network model. """
     NAME_DEFAULT = 'ZteNet'
-    NED_DIR_DEFAULT = '../../src/networks/gen/'
     INI_DIR_DEFAULT = '../../simulations/'
+    CONFIG_INI_DEFAULT = '../../simulations/config/GenNets.ini'
+    NAMESPACE_DEFAULT = 'zte_qos.networks.gen'
+    NED_DIR_DEFAULT = '../../src/networks/gen/'
 
     def __init__(self, info_dir: str, trace_fn: str,
-                 name: str = NAME_DEFAULT, description: str = None, ini_dir: str = INI_DIR_DEFAULT,
-                 out_dir: str = NED_DIR_DEFAULT, use_json: bool = False):
+                 name: str = NAME_DEFAULT, description: str = None,
+                 ini_dir: str = INI_DIR_DEFAULT, config_ini: str = CONFIG_INI_DEFAULT,
+                 out_dir: str = NED_DIR_DEFAULT, namespace: str = NAMESPACE_DEFAULT,
+                 use_json: bool = False):
+        """
+        :param info_dir: where is the info file directory
+        :param trace_fn: where is the trace file
+        :param name: name of the network
+        :param description: description of the network
+        :param ini_dir: where is the omnetpp.ini file for execution
+        :param config_ini: where is the GenNets.ini file to add new Config block for the generated network
+        :param out_dir: where to save the generated NED file
+        :param namespace: namespace of the network
+        :param use_json: whether to use json formatted info data
+        """
         self.info_dir = info_dir
         if not os.path.isdir(self.info_dir):
             raise NotADirectoryError(f'{self.info_dir} is not a directory')
@@ -115,9 +130,13 @@ class Network:
         self.ini_dir = ini_dir
         if not os.path.isdir(self.ini_dir):
             raise NotADirectoryError(f'{self.ini_dir} is not a directory')
+        self.config_ini = config_ini
+        if not os.path.isfile(self.config_ini):
+            raise FileNotFoundError(f'{self.config_ini} is not a valid file')
         self.out_dir = out_dir
         if not os.path.isdir(self.out_dir):
             os.makedirs(out_dir)
+        self.namespace = namespace
         self.use_json = use_json
         self.switches, self.links = self.load_topology()
 
@@ -164,7 +183,7 @@ class Network:
                     '//\n')
             f.write('\n')
             # package
-            f.write('package zte_qos.networks.gen;\n')
+            f.write(f'package {self.namespace};\n')
             f.write('\n')
             # import
             f.write('import zte_qos.terminal.Terminal;\n'
@@ -174,7 +193,17 @@ class Network:
             # network
             f.write('\n'.join(self.to_network_ned(indent)))
             f.write('\n')
-        # TODO: logging and suggest in stdout to put Config into GenNets.ini
+        # suggest putting Config into GenNets.ini
+        print(f'"{out_fn}" successfully generated.')
+        if self.name != Network.NAME_DEFAULT:
+            print('\n'.join([
+                f'Please add the following Config block to "{self.config_ini}", if not exist:',
+                f'```',
+                f'[Config {self.name}]',
+                f'description = "{self.description}"',
+                f'network = {self.namespace}.{self.name}',
+                f'```',
+            ]))
 
     def to_network_ned(self, indent: int = 4) -> list[str]:
         """
