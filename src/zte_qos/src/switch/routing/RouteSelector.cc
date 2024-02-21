@@ -1,5 +1,9 @@
+#include <fstream>
+
 #include "packet/MetaTag_m.h"
 #include "switch/routing/RouteSelector.h"
+#include "util/json.h"
+using json = nlohmann::json;
 
 namespace zte_qos {
 namespace switch_dvc {
@@ -8,22 +12,30 @@ namespace routing {
 Define_Module(RouteSelector);
 
 std::map<int, std::vector<std::string>> RouteSelector::loadRoutingInfo() {
-    // TODO: read `infoFile` and get a map: dstId => [portId]
-    // do sth here.
-
-    // TODO: PoC, remove later
-    std::map<int, std::vector<std::string>> testInfo;
-    if (strcmp(getParentModule()->getName(), "s_0") == 0) {
-        testInfo[1] = std::vector<std::string>{"port_0_1__0"};
-        testInfo[2] = std::vector<std::string>{"port_0_2__0"};
+    std::map<int, std::vector<std::string>> res;
+    std::string infoFileExt = infoFile.substr(infoFile.rfind(".") + 1, infoFile.size() - 1);
+    if (std::strcmp(infoFileExt.c_str(), "yaml") == 0) {
+        // TODO
+        EV << "YAML: to be implemented" << std::endl;
+    } else if (std::strcmp(infoFileExt.c_str(), "json") == 0) {
+        std::ifstream f(infoFile);
+        json routing = json::parse(f)["routing"];
+        f.close();
+        for (json::iterator it = routing.begin(); it != routing.end(); ++it) {
+            std::string dstStr = it.key();
+            std::string port = it.value()["port"];
+            res[std::stoi(dstStr)] = std::vector<std::string>{port};
+        }
+    } else {
+        error("Unsupported infoFile format: %s", infoFileExt.c_str());
     }
-    return testInfo;
+    return res;
 }
 
 std::map<std::string, int> RouteSelector::getTranslationMap() {
     std::map<std::string, int> transMap;
     auto curSwitch = getParentModule();
-    const char *outGateName = "out";    // TODO: read from global const spec files
+    const char *outGateName = "out";
     for (int gateId = 0; gateId < curSwitch->gateSize(outGateName); ++gateId) {
         auto curLink = curSwitch->gate(outGateName, gateId)->getNextGate()->getOwnerModule();
         auto curPortId = curLink->getProperties()->get("metadata")->getValue("srcPort");

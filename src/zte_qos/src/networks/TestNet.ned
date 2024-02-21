@@ -26,6 +26,7 @@ network TestNet
         string dataDir = "dataset/test/";
        	t.traceFile = dataDir + "trace.txt";
        	s_*.infoDir = dataDir + "info/";
+       	s_*.infoFileType = "json";
     submodules:
         // terminal
         t: Terminal;

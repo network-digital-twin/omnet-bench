@@ -25,7 +25,8 @@ module Switch
     parameters:
         int sid = default(-1);
         string infoDir = default("info/");
-        string infoFile = default(infoDir + string(sid) + ".yaml");
+        string infoFileType = default("yaml");
+        string infoFile = default(infoDir + string(sid) + "." + infoFileType);
         @display("i=device/accesspoint");
     gates:
         input tIn;	// entrance for terminal

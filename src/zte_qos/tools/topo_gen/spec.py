@@ -3,6 +3,7 @@ import json
 import itertools
 from pathlib import Path
 from typing import Tuple
+from collections import OrderedDict
 
 import yaml
 
@@ -20,6 +21,7 @@ class Switch:
         self.qos: str = self.yaml_dict['qos']
         self.routing: dict[int, dict] = self.yaml_dict['routing']
         self.switch_type: str = self.yaml_dict['type']
+        self.name = f's_{self.id}'
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -28,7 +30,7 @@ class Switch:
         """
         indent_str = ' ' * indent
         return [
-            f's_{self.id}: Switch {{',
+            f'{self.name}: Switch {{',
             indent_str + f'sid = {self.id};',
             f'}}'
         ]
@@ -70,6 +72,7 @@ class Link:
             dst.port_bw[self.dst_port] if self.dst_port is not None else float('inf')
         )
         self.delay = delay
+        self.name = f'l_{self.src}_{self.dst}__{self.pair_id}'
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -78,7 +81,7 @@ class Link:
         """
         indent_str = ' ' * indent
         return [
-            f'l_{self.src}_{self.dst}__{self.pair_id}: Link {{',
+            f'{self.name}: Link {{',
             indent_str + f'bitrate = {self.bw}bps;',
             indent_str + f'delay = {self.delay}us;',
             indent_str + f'@metadata(srcPort="{self.src_port}");',
@@ -95,12 +98,27 @@ class Link:
 class Network:
     """ Network model. """
     NAME_DEFAULT = 'ZteNet'
-    NED_DIR_DEFAULT = '../../src/networks/gen/'
     INI_DIR_DEFAULT = '../../simulations/'
+    CONFIG_INI_DEFAULT = '../../simulations/config/GenNets.ini'
+    NAMESPACE_DEFAULT = 'zte_qos.networks.gen'
+    NED_DIR_DEFAULT = '../../src/networks/gen/'
 
     def __init__(self, info_dir: str, trace_fn: str,
                  name: str = NAME_DEFAULT, description: str = None,
-                 ini_dir: str = INI_DIR_DEFAULT, out_dir: str = NED_DIR_DEFAULT):
+                 ini_dir: str = INI_DIR_DEFAULT, config_ini: str = CONFIG_INI_DEFAULT,
+                 out_dir: str = NED_DIR_DEFAULT, namespace: str = NAMESPACE_DEFAULT,
+                 use_json: bool = False):
+        """
+        :param info_dir: where is the info file directory
+        :param trace_fn: where is the trace file
+        :param name: name of the network
+        :param description: description of the network
+        :param ini_dir: where is the omnetpp.ini file for execution
+        :param config_ini: where is the GenNets.ini file to add new Config block for the generated network
+        :param out_dir: where to save the generated NED file
+        :param namespace: namespace of the network
+        :param use_json: whether to use json formatted info data
+        """
         self.info_dir = info_dir
         if not os.path.isdir(self.info_dir):
             raise NotADirectoryError(f'{self.info_dir} is not a directory')
@@ -112,20 +130,25 @@ class Network:
         self.ini_dir = ini_dir
         if not os.path.isdir(self.ini_dir):
             raise NotADirectoryError(f'{self.ini_dir} is not a directory')
+        self.config_ini = config_ini
+        if not os.path.isfile(self.config_ini):
+            raise FileNotFoundError(f'{self.config_ini} is not a valid file')
         self.out_dir = out_dir
         if not os.path.isdir(self.out_dir):
             os.makedirs(out_dir)
+        self.namespace = namespace
+        self.use_json = use_json
         self.switches, self.links = self.load_topology()
 
-    def load_topology(self) -> Tuple[dict[int, Switch], set[Link]]:
+    def load_topology(self) -> Tuple[OrderedDict[int, Switch], OrderedDict[str, Link]]:
         """ Load topology as a dict of switch_id => switch from the info directory, and a set of links. """
-        switches: dict[int, Switch] = {}
+        switches: OrderedDict[int, Switch] = OrderedDict()
         for info_fn in os.listdir(self.info_dir):
             if not info_fn.endswith('.yaml'):
                 continue
             cur_switch = Switch(os.path.join(self.info_dir, info_fn))
             switches[cur_switch.id] = cur_switch
-        links: set[Link] = set()
+        links: OrderedDict[str, Link] = OrderedDict()
         link_map: dict[int, dict[int, set[str]]] = {
             src: {
                 dst: set() for dst in switches.keys()
@@ -136,9 +159,10 @@ class Network:
             for route in s.routing.values():
                 dst, src_port = route['next_hop'], route['port']
                 if src_port not in link_map[src][dst]:
-                    links.add(Link(src=switches[src], src_port=src_port,
-                                   dst=switches[dst], dst_port=None,
-                                   pair_id=len(link_map[src][dst])))
+                    new_link = Link(src=switches[src], src_port=src_port,
+                                    dst=switches[dst], dst_port=None,
+                                    pair_id=len(link_map[src][dst]))
+                    links[new_link.name] = new_link
                     link_map[src][dst].add(src_port)
         return switches, links
 
@@ -147,6 +171,11 @@ class Network:
         Generate NED file representing the network.
         :param indent: indent level
         """
+        # export .json files if use_json
+        if self.use_json:
+            for s in self.switches.values():
+                s.to_local_json(path=os.path.join(self.info_dir, f'{s.id}.json'))
+        # generate topology
         out_fn = os.path.join(self.out_dir, f'{self.name}.ned')
         with open(out_fn, 'w') as f:
             f.write('//\n'
@@ -154,7 +183,7 @@ class Network:
                     '//\n')
             f.write('\n')
             # package
-            f.write('package zte_qos.networks.gen;\n')
+            f.write(f'package {self.namespace};\n')
             f.write('\n')
             # import
             f.write('import zte_qos.terminal.Terminal;\n'
@@ -164,7 +193,17 @@ class Network:
             # network
             f.write('\n'.join(self.to_network_ned(indent)))
             f.write('\n')
-        # TODO: logging and suggest in stdout to put Config into GenNets.ini
+        # suggest putting Config into GenNets.ini
+        print(f'"{out_fn}" successfully generated.')
+        if self.name != Network.NAME_DEFAULT:
+            print('\n'.join([
+                f'Please add the following Config block to "{self.config_ini}", if not exist:',
+                f'```',
+                f'[Config {self.name}]',
+                f'description = "{self.description}"',
+                f'network = {self.namespace}.{self.name}',
+                f'```',
+            ]))
 
     def to_network_ned(self, indent: int = 4) -> list[str]:
         """
@@ -180,6 +219,8 @@ class Network:
             *[(indent_str + line) for line in self.to_parameters_ned(indent)],
             # submodules
             *[(indent_str + line) for line in self.to_submodules_ned(indent)],
+            # connections
+            *[(indent_str + line) for line in self.to_connections_ned(indent)],
             f'}}'
         ]
 
@@ -194,10 +235,12 @@ class Network:
         infoDirRel = os.path.relpath(self.info_dir, self.ini_dir).replace('\\', '/')
         if not infoDirRel.endswith('/'):
             infoDirRel += '/'
+        infoFileType: str = 'json' if self.use_json else 'yaml'
         return [
             f'parameters:',
             indent_str + f't.traceFile = "{traceFileRel}";',
-            indent_str + f's_*.infoDir = "{infoDirRel}";'
+            indent_str + f's_*.infoDir = "{infoDirRel}";',
+            indent_str + f's_*.infoFileType = "{infoFileType}";'
         ]
 
     def to_submodules_ned(self, indent: int = 4) -> list[str]:
@@ -216,7 +259,31 @@ class Network:
             *[(indent_str + line) for line in itertools.chain(*[*[s.to_ned(indent) for s in self.switches.values()]])],
             # links
             indent_str + f'// links',
-            *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links]])],
+            *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links.values()]])],
+        ]
+
+    def to_connections_ned(self, indent: int = 4) -> list[str]:
+        """
+        Return a list formatted string lines of the network connections NED block.
+        :param indent: indent level
+        """
+        indent_str = ' ' * indent
+        return [
+            f'connections allowunconnected:',
+            *[(indent_str + line) for line in itertools.chain(*[*[self.to_conn_ned(link) for link in self.links.values()]])],
+        ]
+
+    def to_conn_ned(self, link: Link) -> list[str]:
+        """
+        Return a list formatted string lines of the link connection specification.
+        :param link: link/connection
+        """
+        srcName = self.switches[link.src].name
+        dstName = self.switches[link.dst].name
+        return [
+            f'// {srcName} --> {dstName}',
+            f'{srcName}.out++ --> {link.name}.in;',
+            f'{link.name}.out --> {dstName}.in++;'
         ]
 
     def __str__(self):

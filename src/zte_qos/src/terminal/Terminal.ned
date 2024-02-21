@@ -24,8 +24,4 @@ simple Terminal
         string traceFile;
         @class(zte_qos::terminal::Terminal);
         @display("i=device/antennatower");
-    // TODO: remove gates
-    gates:
-        input in;
-        output out;
 }
