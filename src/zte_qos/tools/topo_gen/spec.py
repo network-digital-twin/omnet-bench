@@ -3,7 +3,7 @@ import json
 import itertools
 from pathlib import Path
 from typing import Tuple
-# TODO: use OrderedDict
+from collections import OrderedDict
 
 import yaml
 
@@ -121,15 +121,15 @@ class Network:
         self.use_json = use_json
         self.switches, self.links = self.load_topology()
 
-    def load_topology(self) -> Tuple[dict[int, Switch], set[Link]]:
+    def load_topology(self) -> Tuple[OrderedDict[int, Switch], OrderedDict[str, Link]]:
         """ Load topology as a dict of switch_id => switch from the info directory, and a set of links. """
-        switches: dict[int, Switch] = {}
+        switches: OrderedDict[int, Switch] = OrderedDict()
         for info_fn in os.listdir(self.info_dir):
             if not info_fn.endswith('.yaml'):
                 continue
             cur_switch = Switch(os.path.join(self.info_dir, info_fn))
             switches[cur_switch.id] = cur_switch
-        links: set[Link] = set()
+        links: OrderedDict[str, Link] = OrderedDict()
         link_map: dict[int, dict[int, set[str]]] = {
             src: {
                 dst: set() for dst in switches.keys()
@@ -140,9 +140,10 @@ class Network:
             for route in s.routing.values():
                 dst, src_port = route['next_hop'], route['port']
                 if src_port not in link_map[src][dst]:
-                    links.add(Link(src=switches[src], src_port=src_port,
-                                   dst=switches[dst], dst_port=None,
-                                   pair_id=len(link_map[src][dst])))
+                    new_link = Link(src=switches[src], src_port=src_port,
+                                    dst=switches[dst], dst_port=None,
+                                    pair_id=len(link_map[src][dst]))
+                    links[new_link.name] = new_link
                     link_map[src][dst].add(src_port)
         return switches, links
 
@@ -229,7 +230,7 @@ class Network:
             *[(indent_str + line) for line in itertools.chain(*[*[s.to_ned(indent) for s in self.switches.values()]])],
             # links
             indent_str + f'// links',
-            *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links]])],
+            *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links.values()]])],
         ]
 
     def to_connections_ned(self, indent: int = 4) -> list[str]:
@@ -240,7 +241,7 @@ class Network:
         indent_str = ' ' * indent
         return [
             f'connections allowunconnected:',
-            *[(indent_str + line) for line in itertools.chain(*[*[self.to_conn_ned(link) for link in self.links]])],
+            *[(indent_str + line) for line in itertools.chain(*[*[self.to_conn_ned(link) for link in self.links.values()]])],
         ]
 
     def to_conn_ned(self, link: Link) -> list[str]:
