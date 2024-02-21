@@ -202,6 +202,7 @@ class Network:
                 f'[Config {self.name}]',
                 f'description = "{self.description}"',
                 f'network = {self.namespace}.{self.name}',
+                f'#sim-time-limit = 60s',
                 f'```',
             ]))
 
