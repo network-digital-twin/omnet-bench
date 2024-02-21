@@ -11,7 +11,7 @@ namespace terminal {
 /***
  * genPacket generates a packet according to the given information.
  */
-inet::Packet* genPacket(int pid, int tos, int src, int dst, int numBytes, double ts);
+inet::Packet* genPacket(int pid, int mid, int src, int dst, int numBytes, double ts, int tos);
 
 /***
  * Terminal generates packets and sends them to the corresponding switches.
