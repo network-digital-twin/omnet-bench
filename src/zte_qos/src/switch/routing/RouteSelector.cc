@@ -8,9 +8,14 @@ namespace routing {
 Define_Module(RouteSelector);
 
 std::map<int, std::vector<std::string>> RouteSelector::loadRoutingInfo() {
-    // TODO: read `infoFile` and get a map: dstId => [portId]
-    // Can switch on .yaml file and .json file, and implement json first for now
-    // do sth here.
+    std::string infoFileExt = infoFile.substr(infoFile.rfind(".") + 1, infoFile.size() - 1);
+    if (std::strcmp(infoFileExt.c_str(), "yaml") == 0) {
+        EV << "YAML: to be implemented" << std::endl;
+    } else if (std::strcmp(infoFileExt.c_str(), "json") == 0) {
+        EV << "JSON: to be implemented" << std::endl;
+    } else {
+        error("Unsupported infoFile format: %s", infoFileExt.c_str());
+    }
 
     // TODO: PoC, remove later
     std::map<int, std::vector<std::string>> testInfo;
