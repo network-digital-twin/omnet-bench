@@ -29,7 +29,7 @@ std::map<int, std::vector<std::string>> RouteSelector::loadRoutingInfo() {
 std::map<std::string, int> RouteSelector::getTranslationMap() {
     std::map<std::string, int> transMap;
     auto curSwitch = getParentModule();
-    const char *outGateName = "out";    // TODO: read from global const spec files
+    const char *outGateName = "out";
     for (int gateId = 0; gateId < curSwitch->gateSize(outGateName); ++gateId) {
         auto curLink = curSwitch->gate(outGateName, gateId)->getNextGate()->getOwnerModule();
         auto curPortId = curLink->getProperties()->get("metadata")->getValue("srcPort");
