@@ -3,6 +3,7 @@ import json
 import itertools
 from pathlib import Path
 from typing import Tuple
+# TODO: use OrderedDict
 
 import yaml
 
@@ -20,6 +21,7 @@ class Switch:
         self.qos: str = self.yaml_dict['qos']
         self.routing: dict[int, dict] = self.yaml_dict['routing']
         self.switch_type: str = self.yaml_dict['type']
+        self.name = f's_{self.id}'
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -28,7 +30,7 @@ class Switch:
         """
         indent_str = ' ' * indent
         return [
-            f's_{self.id}: Switch {{',
+            f'{self.name}: Switch {{',
             indent_str + f'sid = {self.id};',
             f'}}'
         ]
@@ -70,6 +72,7 @@ class Link:
             dst.port_bw[self.dst_port] if self.dst_port is not None else float('inf')
         )
         self.delay = delay
+        self.name = f'l_{self.src}_{self.dst}__{self.pair_id}'
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -78,7 +81,7 @@ class Link:
         """
         indent_str = ' ' * indent
         return [
-            f'l_{self.src}_{self.dst}__{self.pair_id}: Link {{',
+            f'{self.name}: Link {{',
             indent_str + f'bitrate = {self.bw}bps;',
             indent_str + f'delay = {self.delay}us;',
             indent_str + f'@metadata(srcPort="{self.src_port}");',
@@ -186,6 +189,8 @@ class Network:
             *[(indent_str + line) for line in self.to_parameters_ned(indent)],
             # submodules
             *[(indent_str + line) for line in self.to_submodules_ned(indent)],
+            # connections
+            *[(indent_str + line) for line in self.to_connections_ned(indent)],
             f'}}'
         ]
 
@@ -225,6 +230,30 @@ class Network:
             # links
             indent_str + f'// links',
             *[(indent_str + line) for line in itertools.chain(*[*[link.to_ned(indent) for link in self.links]])],
+        ]
+
+    def to_connections_ned(self, indent: int = 4) -> list[str]:
+        """
+        Return a list formatted string lines of the network connections NED block.
+        :param indent: indent level
+        """
+        indent_str = ' ' * indent
+        return [
+            f'connections allowunconnected:',
+            *[(indent_str + line) for line in itertools.chain(*[*[self.to_conn_ned(link) for link in self.links]])],
+        ]
+
+    def to_conn_ned(self, link: Link) -> list[str]:
+        """
+        Return a list formatted string lines of the link connection specification.
+        :param link: link/connection
+        """
+        srcName = self.switches[link.src].name
+        dstName = self.switches[link.dst].name
+        return [
+            f'// {srcName} --> {dstName}',
+            f'{srcName}.out++ --> {link.name}.in;',
+            f'{link.name}.out --> {dstName}.in++;'
         ]
 
     def __str__(self):
