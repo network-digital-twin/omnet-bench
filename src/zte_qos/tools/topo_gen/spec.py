@@ -99,8 +99,8 @@ class Network:
     INI_DIR_DEFAULT = '../../simulations/'
 
     def __init__(self, info_dir: str, trace_fn: str,
-                 name: str = NAME_DEFAULT, description: str = None,
-                 ini_dir: str = INI_DIR_DEFAULT, out_dir: str = NED_DIR_DEFAULT):
+                 name: str = NAME_DEFAULT, description: str = None, ini_dir: str = INI_DIR_DEFAULT,
+                 out_dir: str = NED_DIR_DEFAULT, use_json: bool = False):
         self.info_dir = info_dir
         if not os.path.isdir(self.info_dir):
             raise NotADirectoryError(f'{self.info_dir} is not a directory')
@@ -115,6 +115,7 @@ class Network:
         self.out_dir = out_dir
         if not os.path.isdir(self.out_dir):
             os.makedirs(out_dir)
+        self.use_json = use_json
         self.switches, self.links = self.load_topology()
 
     def load_topology(self) -> Tuple[dict[int, Switch], set[Link]]:
@@ -147,6 +148,11 @@ class Network:
         Generate NED file representing the network.
         :param indent: indent level
         """
+        # export .json files if use_json
+        if self.use_json:
+            for s in self.switches.values():
+                s.to_local_json(path=os.path.join(self.info_dir, f'{s.id}.json'))
+        # generate topology
         out_fn = os.path.join(self.out_dir, f'{self.name}.ned')
         with open(out_fn, 'w') as f:
             f.write('//\n'
@@ -194,11 +200,12 @@ class Network:
         infoDirRel = os.path.relpath(self.info_dir, self.ini_dir).replace('\\', '/')
         if not infoDirRel.endswith('/'):
             infoDirRel += '/'
+        infoFileType: str = 'json' if self.use_json else 'yaml'
         return [
             f'parameters:',
             indent_str + f't.traceFile = "{traceFileRel}";',
-            # TODO: specify infoFileType: as json when exporting .json files
-            indent_str + f's_*.infoDir = "{infoDirRel}";'
+            indent_str + f's_*.infoDir = "{infoDirRel}";',
+            indent_str + f's_*.infoFileType = "{infoFileType}";'
         ]
 
     def to_submodules_ned(self, indent: int = 4) -> list[str]:
