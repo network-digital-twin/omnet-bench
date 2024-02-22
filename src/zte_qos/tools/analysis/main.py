@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Tuple
 from datetime import datetime
 
+import pandas as pd
+
 
 class Analyzer:
     """ Result Analyzer generates corresponding packets.csv and res-simulation.json files. """
@@ -36,7 +38,7 @@ class Analyzer:
         return sim_res, pkt_res
 
     def gen_sim_res(self) -> None:
-        """ Calculate and generate simulation results. """
+        """ Calculate and generate simulation results to .json file. """
         sim_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-simulation.json')
         start_epoch = int(self.sim_res['metrics']['start'])
         end_epoch = int(self.sim_res['metrics']['end'])
@@ -49,6 +51,22 @@ class Analyzer:
             json.dump(sim_res, f, indent=2)
         print(f'Successfully generated "{sim_res_fn}"')
 
+    def gen_pkt_res(self) -> None:
+        """ Dump packet-wise results to .csv file. """
+        pkt_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-packets.csv')
+        pkt_rec: list[dict] = []
+        for res in self.pkt_res.values():
+            pkt_rec.append({
+                **res['metrics'],
+                'module': res['module']
+            })
+        pkt_df = pd.DataFrame.from_records(
+            pkt_rec,
+            columns=['pid', 'start_ts', 'end_ts', 'drop', 'module']
+        )
+        pkt_df.to_csv(pkt_res_fn, index=False)
+        print(f'Successfully generated "{pkt_res_fn}"')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='A result analyzer of the OMNeT++ benchmark.')
@@ -57,3 +75,4 @@ if __name__ == '__main__':
     # generate
     ana = Analyzer(log_fn=FLAGS.log)
     ana.gen_sim_res()
+    ana.gen_pkt_res()
