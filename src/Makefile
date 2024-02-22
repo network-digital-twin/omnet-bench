@@ -11,9 +11,9 @@ net="${NET}"
 endif
 # sim_time
 ifeq ($(strip ${SIM_TIME}),)
-sim_time_blk=""
+sim_time_blk=
 else
-sim_time_blk="--sim-time-limit=${SIM_TIME}"
+sim_time_blk=--sim-time-limit=${SIM_TIME}
 endif
 
 ######################
