@@ -1,6 +1,7 @@
 import json
 import os
 import argparse
+import math
 from collections import OrderedDict
 from pathlib import Path
 from typing import Tuple
@@ -47,6 +48,18 @@ class Analyzer:
             'end': str(datetime.fromtimestamp(end_epoch / 1e9)),
             'elapsed': (end_epoch - start_epoch) / 1e9
         }
+        # calculate packet delay
+        delays = [(res['metrics']['end_ts'] - res['metrics']['start_ts']) for res in self.pkt_res.values() if res['metrics']['drop'] == 0]
+        sim_res['delay'] = {
+            'min': min(delays) if len(delays) > 0 else float('nan'),
+            'max': max(delays) if len(delays) > 0 else float('nan'),
+            'avg': sum(delays) / len(delays) if len(delays) > 0 else float('nan')
+        }
+        # calculate packet jitter
+        sim_res['jitter'] = math.sqrt(sum([math.pow(d - sim_res['delay']['avg'], 2) for d in delays]) / len(delays)) if len(self.pkt_res) > 0 else float('nan')
+        # get number of packet drops
+        sim_res['drop'] = sum([res['metrics']['drop'] for res in self.pkt_res.values()])
+        print(json.dumps(sim_res, indent=2))
         with open(sim_res_fn, 'w') as f:
             json.dump(sim_res, f, indent=2)
         print(f'Successfully generated "{sim_res_fn}"')
