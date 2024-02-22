@@ -9,6 +9,11 @@ namespace zte_qos {
 namespace terminal {
 
 /***
+ * getNowStr retrieves a UNIX epoch in nanoseconds representing "now".
+ */
+std::string getNowStr();
+
+/***
  * genPacket generates a packet according to the given information.
  */
 inet::Packet* genPacket(int pid, int mid, int src, int dst, int numBytes, double ts, int tos);
@@ -20,6 +25,7 @@ class Terminal: public cSimpleModule {
 protected:
     cMessage *genMsg;
     std::string traceFile;
+    std::string startT;
 protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;

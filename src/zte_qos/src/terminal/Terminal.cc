@@ -1,14 +1,25 @@
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <iomanip>
 #include "packet/MetaTag_m.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
 #include "Terminal.h"
+#include "util/json.h"
+using json = nlohmann::json;
 
 using namespace omnetpp;
 
 namespace zte_qos {
 namespace terminal {
+
+std::string getNowStr() {
+    auto now = std::chrono::system_clock::now();
+    auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+    auto ns_cnt = ns.count();
+    return std::to_string(ns_cnt);
+}
 
 inet::Packet* genPacket(int pid, int mid, int src, int dst, int numBytes, double ts, int tos) {
     std::string title = "p_" + std::to_string(pid) + "_" + std::to_string(src) + "~" + std::to_string(dst) + "_tos=" + std::to_string(tos);
@@ -85,6 +96,7 @@ void Terminal::initialize() {
 void Terminal::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg == genMsg) {
         generateTrace();
+        startT = getNowStr();   // record as the starting timestamp of simulation
     } else {
         error("unsupported message for terminal.");
     }
@@ -92,7 +104,16 @@ void Terminal::handleMessage(cMessage *msg) {
 
 void Terminal::finish() {
     delete genMsg;
-    EV_WARN << "[RES] wow..." << std::endl;
+    auto endT = getNowStr();    // record as the ending timestamp of simulation
+    json res = {
+            {"type", "simulation"},
+            {"module", getFullPath()},
+            {"metrics", {
+                    {"start", startT},
+                    {"end", endT}
+            }}
+    };
+    EV_WARN << "[RES] " << res.dump() << std::endl;
 }
 
 } // namespace terminal
