@@ -92,6 +92,7 @@ void Terminal::handleMessage(cMessage *msg) {
 
 void Terminal::finish() {
     delete genMsg;
+    EV_WARN << "[RES] wow..." << std::endl;
 }
 
 } // namespace terminal
