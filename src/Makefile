@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 
-setup-dev:
-	make update-submodules
-	cd inet; chmod 754 setenv && source setenv && git checkout setenv && make makefiles && make
+# parameters
+net=${NET:-"ZteNet"}
+[ -z ${SIM_TIME} ] && sim_time_blk="" || sim_time_blk="--sim-time-limit=${SIM_TIME}"
 
 update-submodules:
 	git submodule update --init --recursive
@@ -10,5 +10,7 @@ update-submodules:
 build:
 	cd zte_qos; make MODE=release all
 
-run-ztenet:
-	cd zte_qos/simulations; ../src/zte_qos -m -u Cmdenv -c ZteNet omnetpp.ini
+setup-dev: update-submodules build
+
+run:
+	cd zte_qos/simulations; ../src/zte_qos -m -u Cmdenv -c ${net} omnetpp.ini ${sim_time_blk}
