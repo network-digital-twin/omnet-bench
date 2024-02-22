@@ -3,13 +3,14 @@ SHELL := /bin/bash
 ######################
 ###     PARAMS     ###
 ######################
-# network
+# network (e.g., TestNet)
 ifeq ($(strip ${NET}),)
-net=ZteNet
+net=TestNet
 else
 net=${NET}
 endif
-# sim_time
+
+# sim_time (e.g., 60s)
 ifeq ($(strip ${SIM_TIME}),)
 sim_time_blk=
 else
@@ -22,10 +23,17 @@ endif
 update-submodules:
 	git submodule update --init --recursive
 
-build:
+# Generate Makefile(s) for OMNeT++ project building
+gen-makefiles: update-submodules
+	cd zte_qos; make makefiles
+
+# Build the OMNeT++ project using the generated Makefile(s)
+build: update-submodules
 	cd zte_qos; make MODE=release all
 
-setup-dev: update-submodules build
+# Set up development environment
+setup-dev: update-submodules && (build || (gen-makefiles && build))
 
-run:
+# Run the built bench
+run: update-submodules
 	cd zte_qos/simulations; ../src/zte_qos -m -u Cmdenv -c ${net} omnetpp.ini ${sim_time_blk}
