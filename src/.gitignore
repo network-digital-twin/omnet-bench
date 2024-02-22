@@ -1,5 +1,6 @@
 # omnetpp
 .metadata/
+.cmdenv-log
 
 # qt
 **/.qtenvrc
