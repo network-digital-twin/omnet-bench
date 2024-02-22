@@ -4,7 +4,11 @@ SHELL := /bin/bash
 ###     PARAMS     ###
 ######################
 # network
-net=${NET:-"ZteNet"}
+ifeq ($(strip ${NET}),)
+net="ZteNet"
+else
+net="${NET}"
+endif
 # sim_time
 ifeq ($(strip ${SIM_TIME}),)
 sim_time_blk=""
