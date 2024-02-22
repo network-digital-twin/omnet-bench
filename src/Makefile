@@ -5,9 +5,9 @@ SHELL := /bin/bash
 ######################
 # network
 ifeq ($(strip ${NET}),)
-net="ZteNet"
+net=ZteNet
 else
-net="${NET}"
+net=${NET}
 endif
 # sim_time
 ifeq ($(strip ${SIM_TIME}),)
