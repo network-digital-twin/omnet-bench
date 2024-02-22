@@ -32,7 +32,8 @@ build: update-submodules
 	cd zte_qos; make MODE=release all
 
 # Set up development environment
-setup-dev: update-submodules && (build || (gen-makefiles && build))
+setup-dev: update-submodules
+	make build || (make gen-makefiles && make build)
 
 # Run the built bench
 run: update-submodules
