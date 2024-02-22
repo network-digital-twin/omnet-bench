@@ -1,9 +1,21 @@
 SHELL := /bin/bash
 
-# parameters
+######################
+###     PARAMS     ###
+######################
+# network
 net=${NET:-"ZteNet"}
-[ -z ${SIM_TIME} ] && sim_time_blk="" || sim_time_blk="--sim-time-limit=${SIM_TIME}"
+# sim_time
+if [[ -z "${SIM_TIME}" ]]; then
+	sim_time_blk=""
+else
+	sim_time_blk="--sim-time-limit=${SIM_TIME}"
+fi
 
+
+######################
+###    COMMANDS    ###
+######################
 update-submodules:
 	git submodule update --init --recursive
 
