@@ -17,8 +17,8 @@ package zte_qos.switch;
 
 import zte_qos.switch.routing.RouteSelector;
 import zte_qos.pipeline.QosPipeline;
+import zte_qos.sink.Sink;
 import inet.queueing.common.PacketMultiplexer;
-import inet.queueing.sink.PassivePacketSink;
 
 module Switch
 {
@@ -41,7 +41,8 @@ module Switch
             infoFile = parent.infoFile;
             @display("p=186.56,78.32");
         }
-        dstSink: PassivePacketSink {
+        dstSink: Sink {
+            sinkType = "dst";
             @display("p=186,175");
         }
         qos[sizeof(out)]: QosPipeline {
