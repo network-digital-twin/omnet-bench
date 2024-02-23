@@ -5,8 +5,8 @@ from spec import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='A network topology generator which generates the corresponding NED file.')
-    parser.add_argument('-i', '--info-dir', type=str, help='directory holding the info files')
-    parser.add_argument('-t', '--trace-fn', type=str, help='path holding the trace file')
+    parser.add_argument('-i', '--info-dir', type=str, help='directory holding the info files', required=True)
+    parser.add_argument('-t', '--trace-fn', type=str, help='path holding the trace file', required=True)
     parser.add_argument('-n', '--net', type=str, help=f'name of the generated network, default = {Network.NAME_DEFAULT}', default=Network.NAME_DEFAULT)
     parser.add_argument('-d', '--description', type=str, help=f'description of the generated network, default = None', default=None)
     parser.add_argument('-ini', '--ini-dir', type=str, help=f'directory holding the omnetpp.ini file, default = {Network.INI_DIR_DEFAULT}', default=Network.INI_DIR_DEFAULT)

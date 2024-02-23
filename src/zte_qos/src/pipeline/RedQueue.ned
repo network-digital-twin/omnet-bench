@@ -15,10 +15,10 @@
 
 package zte_qos.pipeline;
 
+import zte_qos.sink.Sink;
 import inet.queueing.classifier.SingleRateThreeColorClassifier;
 import inet.queueing.filter.RedDropper;
 import inet.queueing.common.PacketMultiplexer;
-import inet.queueing.sink.PassivePacketSink;
 import inet.queueing.queue.PacketQueue;
 
 module RedQueue
@@ -61,7 +61,8 @@ module RedQueue
         mux: PacketMultiplexer {
             @display("p=436,175");
         }
-        dropSink: PassivePacketSink {
+        dropSink: Sink {
+            sinkType = "drop";
             @display("p=305,100");
         }
         queue: PacketQueue {
