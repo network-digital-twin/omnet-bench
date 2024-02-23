@@ -23,17 +23,16 @@ endif
 update-submodules:
 	git submodule update --init --recursive
 
+build-inet: update-submodules
+	cd inet; source setenv; make makefiles; make MODE=release all
+
 # Generate Makefile(s) for OMNeT++ project building
-gen-makefiles: update-submodules
-	cd zte_qos; make makefiles
+gen-makefiles:
+	cd zte_qos; make makefiles || (make build-inet && make makefiles)
 
 # Build the OMNeT++ project using the generated Makefile(s)
-build: update-submodules
-	cd zte_qos; make MODE=release all
-
-# Set up development environment
-setup-dev: update-submodules
-	make build || (make gen-makefiles && make build)
+build:
+	cd zte_qos; make MODE=release all || (make gen-makefiles && make MODE=release all)
 
 # Run the built bench
 run: build
