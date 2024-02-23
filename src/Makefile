@@ -24,7 +24,8 @@ update-submodules:
 	git submodule update --init --recursive
 
 build-inet: update-submodules
-	cd inet; source setenv; make makefiles; make MODE=release all
+	cd inet; source setenv; make makefiles
+	cd inet/src; make MODE=release all
 
 # Generate Makefile(s) for OMNeT++ project building
 gen-makefiles:
