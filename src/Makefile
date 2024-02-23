@@ -17,6 +17,14 @@ else
 sim_time_blk=--sim-time-limit=${SIM_TIME}
 endif
 
+
+# core (e.g., 16)
+ifeq ($(strip ${CORE}),)
+core=
+else
+core=-j${CORE}
+endif
+
 ######################
 ###    COMMANDS    ###
 ######################
@@ -24,8 +32,7 @@ update-submodules:
 	git submodule update --init --recursive
 
 build-inet: update-submodules
-	cd inet; source setenv; make makefiles
-	cd inet/src; make MODE=release all
+	cd inet; source setenv; make makefiles && make ${core} MODE=release all
 
 # Generate Makefile(s) for OMNeT++ project building
 gen-makefiles:
@@ -33,7 +40,7 @@ gen-makefiles:
 
 # Build the OMNeT++ project using the generated Makefile(s)
 build:
-	cd zte_qos; make MODE=release all || (make gen-makefiles && make MODE=release all)
+	cd zte_qos; make ${core} MODE=release all || (make gen-makefiles && make ${core} MODE=release all)
 
 # Run the built bench
 run: build
