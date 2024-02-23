@@ -26,7 +26,9 @@ Inside the main `zte_qos` project, there are three important folders:
 This section clarifies the steps needed to run the benchmark without building the OMNeT++ project.
 
 ### Requirements
-To run the benchmark, the OMNeT++ environment is not mandatory. However, a Python environment is needed to execute the topology generation script and the result analysis script.
+To run the benchmark, **the OMNeT++ environment is mandatory** since the INET project has to be rebuilt. To install OMNeT++, refer to the [official installation guide](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf).
+
+Furthermore, **a Python environment is needed** to execute the topology generation script and the result analysis script.
 
 The Python dependencies are listed as follows:
 1. `PyYAML==6.0.1`: loading/dumping of YAML files, required by the [topology generator](src/zte_qos/tools/topo_gen/requirements.txt);

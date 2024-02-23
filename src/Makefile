@@ -36,5 +36,5 @@ setup-dev: update-submodules
 	make build || (make gen-makefiles && make build)
 
 # Run the built bench
-run: update-submodules
+run: build
 	cd zte_qos/simulations; ../src/zte_qos -m -u Cmdenv -c ${net} omnetpp.ini ${sim_time_blk}
