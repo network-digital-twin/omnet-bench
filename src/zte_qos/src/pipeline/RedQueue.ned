@@ -39,7 +39,6 @@ module RedQueue
         output out;
     submodules:
         srTcm: SingleRateThreeColorClassifier {
-            bitsPerToken = 1;
             @display("p=94,175");
         }
         redG: RedDropper {
