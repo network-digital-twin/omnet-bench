@@ -45,7 +45,7 @@ Below specifies the minimum operations required to perform a benchmark on a spec
 ### 1. Prepare network & trace data
 Two categories of data are required:
 1. `info/<SWITCH_ID>.yaml`: a directory, not necessarily named `info/`, should contain all the switch info YAML files. These files include the routing information of the switches, which is required by the [RouteSelectors](src/zte_qos/src/switch/routing/RouteSelector.ned).
-2. `trace.txt`: a text file specifying a trace of packets to be simulated on the network. Each line in the file represents a packet, whose attributes are separated by one single space. Lines starting with a "#" are ignored.
+2. `trace.txt`: a text file specifying a trace of packets to be simulated on the network, which is required by the [Terminal](src/zte_qos/src/terminal/Terminal.ned). Each line in the file represents a packet, whose attributes are separated by one single space. Lines starting with a "#" are ignored.
 
 ### 2. Generate network topology
 Go to folder where the network topology generator resides:
