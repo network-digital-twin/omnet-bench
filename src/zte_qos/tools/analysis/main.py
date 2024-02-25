@@ -14,7 +14,7 @@ PacketRes = dict[int, dict[int, list[dict]]]
 
 
 class Analyzer:
-    """ Result Analyzer generates corresponding packets.csv and res-simulation.json files. """
+    """ Result Analyzer generates corresponding res-simulation.json, res-packets.csv, and res-flows.csv files. """
     def __init__(self, log_fn: str):
         self.log_fn = log_fn
         if not self.log_fn.endswith('.log') or not os.path.isfile(self.log_fn):
@@ -80,23 +80,26 @@ class Analyzer:
 
     def gen_pkt_res(self) -> None:
         """ Dump packet-wise results to .csv file. """
-        # TODO: process result per src-dst pair
         pkt_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-packets.csv')
         pkt_rec: list[dict] = []
-        # TODO: sorted src_id keys and then sorted dst_id keys
         for res in self.get_flat_pkt_res():
             pkt_rec.append({
                 **res['metrics'],
                 'module': res['module']
             })
-        # TODO: update columns
         pkt_df = pd.DataFrame.from_records(
             pkt_rec,
             columns=['pid', 'src', 'dst', 'start_ts', 'end_ts', 'drop', 'module']
         )
-        # TODO: no header
         pkt_df.to_csv(pkt_res_fn, index=False)
         print(f'Successfully generated "{pkt_res_fn}"')
+
+    def gen_flow_res(self) -> None:
+        """ Dump flow-wise results to .csv file. """
+        # TODO: sorted src_id keys and then sorted dst_id keys
+        # TODO: update columns
+        # TODO: no header
+        pass
 
 
 if __name__ == '__main__':
@@ -107,3 +110,4 @@ if __name__ == '__main__':
     ana = Analyzer(log_fn=FLAGS.log)
     ana.gen_sim_res()
     ana.gen_pkt_res()
+    ana.gen_flow_res()
