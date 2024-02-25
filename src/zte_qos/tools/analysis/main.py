@@ -51,7 +51,8 @@ class Analyzer:
         """ Get all packet results from as a flatten list. """
         return list(itertools.chain(*itertools.chain(*[src_dict.values() for src_dict in self.pkt_res.values()])))
 
-    def process_pkt_stats(self, pkt_res: list[dict]) -> dict:
+    @staticmethod
+    def process_pkt_stats(pkt_res: list[dict]) -> dict:
         """ Process packet statistics given a flat list of packet results. """
         pkt_stats = {}
         # calculate packet delay
@@ -64,9 +65,11 @@ class Analyzer:
         # calculate packet jitter
         pkt_stats['jitter'] = math.sqrt(sum([
             math.pow(d - pkt_stats['delay']['avg'], 2) for d in delays
-        ]) / len(delays)) if len(self.pkt_res) > 0 else float('nan')
+        ]) / len(delays)) if len(delays) > 0 else float('nan')
         # get number of packet drops
-        pkt_stats['drop'] = sum([res['metrics']['drop'] for res in pkt_res])
+        pkt_stats['drop_rate'] = sum([
+            res['metrics']['drop'] for res in pkt_res
+        ]) / len(pkt_res) if len(pkt_res) > 0 else float('nan')
         return pkt_stats
 
     def gen_sim_res(self) -> None:
