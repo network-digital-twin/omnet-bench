@@ -71,7 +71,7 @@ class Analyzer:
         } if detailed_delay_metrics else avg_delay
         # calculate packet jitter
         pkt_stats['jitter'] = math.sqrt(sum([
-            math.pow(d - pkt_stats['delay']['avg'], 2) for d in delays
+            math.pow(d - avg_delay, 2) for d in delays
         ]) / len(delays)) if len(delays) > 0 else float('nan')
         # get number of packet drops
         pkt_stats['drop_rate'] = sum([
@@ -88,7 +88,7 @@ class Analyzer:
             'start': str(datetime.fromtimestamp(start_epoch / 1e9)),
             'end': str(datetime.fromtimestamp(end_epoch / 1e9)),
             'elapsed': (end_epoch - start_epoch) / 1e9,
-            **self.process_pkt_stats(pkt_res=self.get_flat_pkt_res())
+            **self.process_pkt_stats(pkt_res=self.get_flat_pkt_res(), detailed_delay_metrics=True)
         }
         print(json.dumps(sim_res, indent=2))
         with open(sim_res_fn, 'w') as f:
@@ -115,9 +115,19 @@ class Analyzer:
         """ Dump flow-wise results to .csv file. """
         flow_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-flows.csv')
         flow_rec: list[dict] = []
-        # for
-        # TODO: no header
-        pass
+        for src, dst_dict in sorted(self.pkt_res.items()):
+            for dst, res_list in sorted(dst_dict.items()):
+                flow_rec.append({
+                    'src': src,
+                    'dst': dst,
+                    **self.process_pkt_stats(pkt_res=res_list, detailed_delay_metrics=False)
+                })
+        flow_df = pd.DataFrame.from_records(
+            flow_rec,
+            columns=['src', 'dst', 'num_packets', 'delay', 'jitter', 'drop_rate']
+        )
+        flow_df.to_csv(flow_res_fn, index=False, header=False)
+        print(f'Successfully generated "{flow_res_fn}"')
 
 
 if __name__ == '__main__':
