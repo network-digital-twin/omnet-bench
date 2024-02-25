@@ -51,6 +51,24 @@ class Analyzer:
         """ Get all packet results from as a flatten list. """
         return list(itertools.chain(*itertools.chain(*[src_dict.values() for src_dict in self.pkt_res.values()])))
 
+    def process_pkt_stats(self, pkt_res: list[dict]) -> dict:
+        """ Process packet statistics given a flat list of packet results. """
+        pkt_stats = {}
+        # calculate packet delay
+        delays = [(res['metrics']['end_ts'] - res['metrics']['start_ts']) for res in pkt_res if res['metrics']['drop'] == 0]
+        pkt_stats['delay'] = {
+            'min': min(delays) if len(delays) > 0 else float('nan'),
+            'max': max(delays) if len(delays) > 0 else float('nan'),
+            'avg': sum(delays) / len(delays) if len(delays) > 0 else float('nan')
+        }
+        # calculate packet jitter
+        pkt_stats['jitter'] = math.sqrt(sum([
+            math.pow(d - pkt_stats['delay']['avg'], 2) for d in delays
+        ]) / len(delays)) if len(self.pkt_res) > 0 else float('nan')
+        # get number of packet drops
+        pkt_stats['drop'] = sum([res['metrics']['drop'] for res in pkt_res])
+        return pkt_stats
+
     def gen_sim_res(self) -> None:
         """ Calculate and generate simulation results to .json file. """
         sim_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-simulation.json')
@@ -59,20 +77,9 @@ class Analyzer:
         sim_res = {
             'start': str(datetime.fromtimestamp(start_epoch / 1e9)),
             'end': str(datetime.fromtimestamp(end_epoch / 1e9)),
-            'elapsed': (end_epoch - start_epoch) / 1e9
+            'elapsed': (end_epoch - start_epoch) / 1e9,
+            **self.process_pkt_stats(pkt_res=self.get_flat_pkt_res())
         }
-        all_pkt_res = self.get_flat_pkt_res()
-        # calculate packet delay
-        delays = [(res['metrics']['end_ts'] - res['metrics']['start_ts']) for res in all_pkt_res if res['metrics']['drop'] == 0]
-        sim_res['delay'] = {
-            'min': min(delays) if len(delays) > 0 else float('nan'),
-            'max': max(delays) if len(delays) > 0 else float('nan'),
-            'avg': sum(delays) / len(delays) if len(delays) > 0 else float('nan')
-        }
-        # calculate packet jitter
-        sim_res['jitter'] = math.sqrt(sum([math.pow(d - sim_res['delay']['avg'], 2) for d in delays]) / len(delays)) if len(self.pkt_res) > 0 else float('nan')
-        # get number of packet drops
-        sim_res['drop'] = sum([res['metrics']['drop'] for res in all_pkt_res])
         print(json.dumps(sim_res, indent=2))
         with open(sim_res_fn, 'w') as f:
             json.dump(sim_res, f, indent=2)
