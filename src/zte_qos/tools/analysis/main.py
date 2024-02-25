@@ -20,6 +20,7 @@ class Analyzer:
         self.log_fn_prefix = Path(self.log_fn).stem
         self.sim_res, self.pkt_res = self.load_res_from_log()
 
+    # TODO: pkt_res: OrderedDict[int, dict] --> dict[int, dict[int, dict]], meaning src_id => (dst_id, res_dict)
     def load_res_from_log(self) -> Tuple[dict, OrderedDict[int, dict]]:
         """ Load simulation and packet results from log files. """
         sim_res = {}
@@ -66,8 +67,10 @@ class Analyzer:
 
     def gen_pkt_res(self) -> None:
         """ Dump packet-wise results to .csv file. """
+        # TODO: process result per src-dst pair
         pkt_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-packets.csv')
         pkt_rec: list[dict] = []
+        # TODO: sorted src_id keys and then sorted dst_id keys
         for res in self.pkt_res.values():
             pkt_rec.append({
                 **res['metrics'],
