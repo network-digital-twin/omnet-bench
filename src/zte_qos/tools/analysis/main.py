@@ -20,7 +20,7 @@ class Analyzer:
         self.log_fn_prefix = Path(self.log_fn).stem
         self.sim_res, self.pkt_res = self.load_res_from_log()
 
-    # TODO: pkt_res: OrderedDict[int, dict] --> dict[int, dict[int, dict]], meaning src_id => (dst_id, res_dict)
+    # TODO: pkt_res: OrderedDict[int, dict] --> dict[int, dict[int, dict]], meaning src_id => (dst_id, list[res_dict])
     def load_res_from_log(self) -> Tuple[dict, OrderedDict[int, dict]]:
         """ Load simulation and packet results from log files. """
         sim_res = {}
