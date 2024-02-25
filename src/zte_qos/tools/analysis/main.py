@@ -52,16 +52,23 @@ class Analyzer:
         return list(itertools.chain(*itertools.chain(*[src_dict.values() for src_dict in self.pkt_res.values()])))
 
     @staticmethod
-    def process_pkt_stats(pkt_res: list[dict]) -> dict:
-        """ Process packet statistics given a flat list of packet results. """
-        pkt_stats = {}
+    def process_pkt_stats(pkt_res: list[dict], detailed_delay_metrics: bool = True) -> dict:
+        """
+        Process packet statistics given a flat list of packet results.
+        :param pkt_res: a flat list of packet results
+        :param detailed_delay_metrics: whether to calculate all delay metrics (min, max, avg); if not, calculate avg only
+        """
+        pkt_stats = {
+            'num_packets': len(pkt_res)
+        }
         # calculate packet delay
         delays = [(res['metrics']['end_ts'] - res['metrics']['start_ts']) for res in pkt_res if res['metrics']['drop'] == 0]
+        avg_delay = sum(delays) / len(delays) if len(delays) > 0 else float('nan')
         pkt_stats['delay'] = {
             'min': min(delays) if len(delays) > 0 else float('nan'),
             'max': max(delays) if len(delays) > 0 else float('nan'),
-            'avg': sum(delays) / len(delays) if len(delays) > 0 else float('nan')
-        }
+            'avg': avg_delay
+        } if detailed_delay_metrics else avg_delay
         # calculate packet jitter
         pkt_stats['jitter'] = math.sqrt(sum([
             math.pow(d - pkt_stats['delay']['avg'], 2) for d in delays
@@ -106,8 +113,9 @@ class Analyzer:
 
     def gen_flow_res(self) -> None:
         """ Dump flow-wise results to .csv file. """
-        # TODO: sorted src_id keys and then sorted dst_id keys
-        # TODO: update columns
+        flow_res_fn = os.path.join(self.log_dir, f'{self.log_fn_prefix}-res-flows.csv')
+        flow_rec: list[dict] = []
+        # for
         # TODO: no header
         pass
 
