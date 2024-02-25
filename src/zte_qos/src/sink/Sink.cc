@@ -22,6 +22,8 @@ void Sink::consumePacket(inet::Packet *packet) {
             {"module", getFullPath()},
             {"metrics", {
                     {"pid", tag->getPid()},
+                    {"src", tag->getSrc()},
+                    {"dst", tag->getDst()},
                     {"start_ts", tag->getTs()},
                     {"end_ts", omnetpp::simTime().dbl() * 1000000000},
                     {"drop", std::strcmp(sinkType.c_str(), "drop") == 0 ? 1 : 0}

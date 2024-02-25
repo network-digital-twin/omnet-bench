@@ -76,10 +76,12 @@ class Analyzer:
                 **res['metrics'],
                 'module': res['module']
             })
+        # TODO: update columns
         pkt_df = pd.DataFrame.from_records(
             pkt_rec,
             columns=['pid', 'start_ts', 'end_ts', 'drop', 'module']
         )
+        # TODO: no header
         pkt_df.to_csv(pkt_res_fn, index=False)
         print(f'Successfully generated "{pkt_res_fn}"')
 
