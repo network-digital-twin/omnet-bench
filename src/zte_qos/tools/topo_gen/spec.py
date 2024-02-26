@@ -4,6 +4,8 @@ import itertools
 from pathlib import Path
 from typing import Tuple
 from collections import OrderedDict
+import multiprocessing
+from tqdm import tqdm
 
 import yaml
 
@@ -104,12 +106,13 @@ class Network:
     CONFIG_INI_DEFAULT = '../../simulations/config/GenNets.ini'
     NAMESPACE_DEFAULT = 'zte_qos.networks.gen'
     NED_DIR_DEFAULT = '../../src/networks/gen/'
+    NUM_WORKERS_DEFAULT = 36
 
     def __init__(self, info_dir: str, trace_fn: str,
                  name: str = NAME_DEFAULT, description: str = None,
                  ini_dir: str = INI_DIR_DEFAULT, config_ini: str = CONFIG_INI_DEFAULT,
                  out_dir: str = NED_DIR_DEFAULT, namespace: str = NAMESPACE_DEFAULT,
-                 use_json: bool = False):
+                 use_json: bool = False, num_workers: int = NUM_WORKERS_DEFAULT):
         """
         :param info_dir: where is the info file directory
         :param trace_fn: where is the trace file
@@ -120,6 +123,7 @@ class Network:
         :param out_dir: where to save the generated NED file
         :param namespace: namespace of the network
         :param use_json: whether to use json formatted info data
+        :param num_workers: number of cores to load switches info data
         """
         self.info_dir = info_dir
         if not os.path.isdir(self.info_dir):
@@ -140,16 +144,29 @@ class Network:
             os.makedirs(out_dir)
         self.namespace = namespace
         self.use_json = use_json
+        self.num_workers = num_workers
         self.switches, self.links = self.load_topology()
 
     def load_topology(self) -> Tuple[OrderedDict[int, Switch], OrderedDict[str, Link]]:
         """ Load topology as a dict of switch_id => switch from the info directory, and a set of links. """
         switches: OrderedDict[int, Switch] = OrderedDict()
-        for info_fn in os.listdir(self.info_dir):
-            if not info_fn.endswith('.yaml'):
-                continue
-            cur_switch = Switch(os.path.join(self.info_dir, info_fn))
-            switches[cur_switch.id] = cur_switch
+        info_fns = [os.path.join(self.info_dir, info_fn) for info_fn in os.listdir(self.info_dir) if info_fn.endswith('.yaml')]
+        pool = multiprocessing.Pool(processes=self.num_workers)
+        pbar_switches_tasks = tqdm(total=len(info_fns))
+
+        def pbar_update_switches(res: Switch) -> None:
+            switches[res.id] = res
+            pbar_switches_tasks.update()
+
+        def get_switch(info_fp: str) -> Switch:
+            return Switch(info_fp)
+
+        for info_fn in info_fns:
+            pool.apply_async(get_switch, args=info_fn, callback=pbar_update_switches)
+        pool.close()
+        pool.join()
+        pbar_switches_tasks.close()
+
         links: OrderedDict[str, Link] = OrderedDict()
         link_map: dict[int, dict[int, set[str]]] = {
             src: {
