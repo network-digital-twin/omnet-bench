@@ -27,11 +27,16 @@ class Analyzer:
         """ Load simulation and packet results from log files. """
         sim_res = {}
         pkt_res: PacketRes = {}
+        num_events = -1
         with open(self.log_fn, 'r') as f:
             while True:
                 line: str = f.readline()
                 if not line:
                     break
+                if line.startswith('<!>') and 'event' in line:
+                    # retrieve number of events
+                    num_events = int(line.strip().rsplit('event', maxsplit=1)[-1].strip()[1:])
+                    continue
                 if not line.startswith('[RES]'):
                     continue
                 log_json: dict = json.loads(line.strip().split(' ', maxsplit=1)[-1])
@@ -45,6 +50,7 @@ class Analyzer:
                     if dst_id not in pkt_res[src_id]:
                         pkt_res[src_id][dst_id] = []
                     pkt_res[src_id][dst_id].append(log_json)
+        sim_res['num_events'] = num_events
         return sim_res, pkt_res
 
     def get_flat_pkt_res(self) -> list[dict]:
@@ -88,8 +94,10 @@ class Analyzer:
             'start': str(datetime.fromtimestamp(start_epoch / 1e9)),
             'end': str(datetime.fromtimestamp(end_epoch / 1e9)),
             'elapsed': (end_epoch - start_epoch) / 1e9,
+            'num_events': self.sim_res['num_events'],
             **self.process_pkt_stats(pkt_res=self.get_flat_pkt_res(), detailed_delay_metrics=True)
         }
+        sim_res['eps'] = sim_res['num_events'] / sim_res['elapsed'] if sim_res['elapsed'] != 0 else float('nan')
         print(json.dumps(sim_res, indent=2))
         with open(sim_res_fn, 'w') as f:
             json.dump(sim_res, f, indent=2)
