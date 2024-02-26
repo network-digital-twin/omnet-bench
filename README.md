@@ -70,6 +70,7 @@ python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/data
 ```
 The output will be:
 ```bash
+100%|██████████| 3/3 [00:00<00:00, 15.78it/s]
 "../../src/networks/gen/ZteNet.ned" successfully generated.
 ```
 According to the output, the corresponding `ZteNet.ned` file has been successfully generated.
