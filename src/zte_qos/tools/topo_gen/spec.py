@@ -228,6 +228,7 @@ class Network:
                 f'description = "{self.description}"',
                 f'network = {self.namespace}.{self.name}',
                 f'#sim-time-limit = 60s',
+                f'#*.traceFile = "<TRACE_FN>"',
                 f'###########################',
                 f'###         QOS         ###',
                 f'###########################',
@@ -268,7 +269,7 @@ class Network:
         infoFileType: str = 'json' if self.use_json else 'yaml'
         return [
             f'parameters:',
-            indent_str + f't.traceFile = "{traceFileRel}";',
+            indent_str + f'string traceFile = default("{traceFileRel}");',
             indent_str + f's_*.infoDir = "{infoDirRel}";',
             indent_str + f's_*.infoFileType = "{infoFileType}";'
         ]
@@ -283,7 +284,9 @@ class Network:
             f'submodules:',
             # terminal
             indent_str + f'// terminal',
-            indent_str + f't: Terminal;',
+            indent_str + f't: Terminal {{',
+            indent_str * 2 + f'traceFile = parent.traceFile;',
+            indent_str + f'}}',
             # switches
             indent_str + f'// switches',
             *[(indent_str + line) for line in itertools.chain(*[*[s.to_ned(indent) for s in self.switches.values()]])],
