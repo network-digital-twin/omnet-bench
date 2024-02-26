@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import json
 import itertools
@@ -25,6 +27,10 @@ class Switch:
         self.switch_type: str = self.yaml_dict['type']
         self.name = f's_{self.id}'
         self.links: list[Link] = []
+
+    @staticmethod
+    def get_switch(info_fp: str) -> Switch:
+        return Switch(info_fp)
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -149,6 +155,7 @@ class Network:
 
     def load_topology(self) -> Tuple[OrderedDict[int, Switch], OrderedDict[str, Link]]:
         """ Load topology as a dict of switch_id => switch from the info directory, and a set of links. """
+        # switches
         switches: OrderedDict[int, Switch] = OrderedDict()
         info_fns = [os.path.join(self.info_dir, info_fn) for info_fn in os.listdir(self.info_dir) if info_fn.endswith('.yaml')]
         pool = multiprocessing.Pool(processes=self.num_workers)
@@ -158,15 +165,13 @@ class Network:
             switches[res.id] = res
             pbar_switches_tasks.update()
 
-        def get_switch(info_fp: str) -> Switch:
-            return Switch(info_fp)
-
         for info_fn in info_fns:
-            pool.apply_async(get_switch, args=info_fn, callback=pbar_update_switches)
+            pool.apply_async(Switch.get_switch, args=(info_fn,), callback=pbar_update_switches)
+            # pbar_update_switches(Switch.get_switch(info_fn))    # DEBUG
         pool.close()
         pool.join()
         pbar_switches_tasks.close()
-
+        # links
         links: OrderedDict[str, Link] = OrderedDict()
         link_map: dict[int, dict[int, set[str]]] = {
             src: {
