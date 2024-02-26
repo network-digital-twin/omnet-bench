@@ -206,6 +206,10 @@ class Network:
                 f'description = "{self.description}"',
                 f'network = {self.namespace}.{self.name}',
                 f'#sim-time-limit = 60s',
+                f'###########################',
+                f'###         QOS         ###',
+                f'###########################',
+                f'# Add QoS configurations here.',
                 f'```',
             ]))
 
