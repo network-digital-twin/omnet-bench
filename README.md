@@ -138,9 +138,10 @@ python main.py -l ../../simulations/results/ZteNet-#0.log
 The output will be:
 ```bash
 {
-  "start": "2024-02-26 10:26:16.839461",
-  "end": "2024-02-26 10:26:16.840464",
-  "elapsed": 0.001003,
+  "start": "2024-02-26 19:59:39.410424",
+  "end": "2024-02-26 19:59:39.411428",
+  "elapsed": 0.0010043,
+  "num_events": 134,
   "num_packets": 5,
   "delay": {
     "min": 0.0,
@@ -148,7 +149,8 @@ The output will be:
     "avg": 21750007999.999996
   },
   "jitter": 17290896072.78975,
-  "drop_rate": 0.0
+  "drop_rate": 0.0,
+  "eps": 133426.26705167777
 }
 Successfully generated "..\..\simulations\results\TestNet-#0-res-simulation.json"
 Successfully generated "..\..\simulations\results\TestNet-#0-res-packets.csv"
