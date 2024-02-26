@@ -1,0 +1,636 @@
+version 3
+run TestNet-0-20240226-10:26:16-21548
+attr configname TestNet
+attr datetime 20240226-10:26:16
+attr datetimef 20240226-102616
+attr experiment TestNet
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network zte_qos.networks.TestNet
+attr processid 21548
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../../inet/images
+config description "Testing functionalities."
+config network zte_qos.networks.TestNet
+config sim-time-limit 60s
+config **.qos[*].committedInformationRate 8bps
+config **.srTcm.committedBurstSize 100b
+config **.srTcm.excessBurstSize 100b
+config **.priority*.dataCapacity 524288b
+config **.qos[*].generationInterval 1s
+config **.shaper.maxNumTokens 100
+config **.shaper.tokenConsumptionPerPacket 0
+config **.qos[*].tokenConsumptionPerBit 1
+config description "Common default configurations."
+config load-libs ../../inet/src/INET
+config ned-path ../src;.;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tests/validation;../../inet/tests/networks;../../inet/tutorials
+config ned-package-exclusions inet.applications.voipstream;inet.common.selfdoc;inet.emulation;inet.examples.emulation;inet.examples.voipstream;inet.linklayer.configurator.gatescheduling.z3;inet.showcases.emulation;inet.showcases.visualizer.osg;inet.transportlayer.tcp_lwip;inet.visualizer.osg
+config image-path ../../inet/images
+config **.statistic-recording false
+config record-eventlog false
+config cmdenv-redirect-output true
+config cmdenv-output-file results/TestNet-#0.log
+config cmdenv-express-mode false
+config cmdenv-event-banners false
+config cmdenv-log-prefix ""
+config **.t.cmdenv-log-level warn
+config **.*Sink.cmdenv-log-level warn
+config **.cmdenv-log-level off
+config repeat 1
+config cmdenv-runs-to-execute 0
+config result-dir results
+
+par TestNet.t typename "\"zte_qos.terminal.Terminal\""
+par TestNet.t traceFile "\"dataset/test/trace.txt\""
+par TestNet.s_0.tIn.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.mux forwardServiceRegistration true
+par TestNet.s_0.mux forwardProtocolRegistration true
+par TestNet.s_0.routeSel typename "\"zte_qos.switch.routing.RouteSelector\""
+par TestNet.s_0.routeSel displayStringTextFormat "\"classified %p pk (%l)\""
+par TestNet.s_0.routeSel reverseOrder false
+par TestNet.s_0.routeSel sid 0
+par TestNet.s_0.routeSel infoFile "\"dataset/test/info/0.json\""
+par TestNet.s_0.dstSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.dstSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.dstSink clockModule "\"\""
+par TestNet.s_0.dstSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.dstSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.dstSink scheduleForAbsoluteTime true
+par TestNet.s_0.dstSink sinkType "\"dst\""
+par TestNet.s_0.qos[0].in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].shaper.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].classifier typename "\"inet.queueing.classifier.PacketClassifier\""
+par TestNet.s_0.qos[0].classifier displayStringTextFormat "\"classified %p pk (%l)\""
+par TestNet.s_0.qos[0].classifier reverseOrder false
+par TestNet.s_0.qos[0].classifier classifierClass "\"zte_qos::pipeline::classifier::Tos2QosClassifier\""
+par TestNet.s_0.qos[0].priority0.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority0.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority0.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority0.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority0.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority0.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[0].priority0.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[0].priority0.srTcm reverseOrder false
+par TestNet.s_0.qos[0].priority0.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[0].priority0.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[0].priority0.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[0].priority0.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[0].priority0.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority0.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority0.srTcm bitsPerToken 8
+par TestNet.s_0.qos[0].priority0.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority0.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority0.redG backpressure false
+par TestNet.s_0.qos[0].priority0.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority0.redG wq 0.002
+par TestNet.s_0.qos[0].priority0.redG minth 50
+par TestNet.s_0.qos[0].priority0.redG maxth 100
+par TestNet.s_0.qos[0].priority0.redG maxp 0.3
+par TestNet.s_0.qos[0].priority0.redG pkrate 150
+par TestNet.s_0.qos[0].priority0.redG useEcn false
+par TestNet.s_0.qos[0].priority0.redG packetCapacity 100
+par TestNet.s_0.qos[0].priority0.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority0.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority0.redY backpressure false
+par TestNet.s_0.qos[0].priority0.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority0.redY wq 0.002
+par TestNet.s_0.qos[0].priority0.redY minth 30
+par TestNet.s_0.qos[0].priority0.redY maxth 60
+par TestNet.s_0.qos[0].priority0.redY maxp 0.6
+par TestNet.s_0.qos[0].priority0.redY pkrate 150
+par TestNet.s_0.qos[0].priority0.redY useEcn false
+par TestNet.s_0.qos[0].priority0.redY packetCapacity 60
+par TestNet.s_0.qos[0].priority0.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[0].priority0.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[0].priority0.mux forwardServiceRegistration true
+par TestNet.s_0.qos[0].priority0.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[0].priority0.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[0].priority0.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[0].priority0.dropSink clockModule "\"\""
+par TestNet.s_0.qos[0].priority0.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[0].priority0.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[0].priority0.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[0].priority0.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[0].priority0.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[0].priority0.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[0].priority0.queue packetCapacity -1
+par TestNet.s_0.qos[0].priority0.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority0.queue dropperClass "\"\""
+par TestNet.s_0.qos[0].priority0.queue comparatorClass "\"\""
+par TestNet.s_0.qos[0].priority0.queue bufferModule "\"\""
+par TestNet.s_0.qos[0].priority0 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[0].priority0 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority0 wq 0.002
+par TestNet.s_0.qos[0].priority0 minthG 50
+par TestNet.s_0.qos[0].priority0 maxthG 100
+par TestNet.s_0.qos[0].priority0 maxpG 0.3
+par TestNet.s_0.qos[0].priority0 minthY 30
+par TestNet.s_0.qos[0].priority0 maxthY 60
+par TestNet.s_0.qos[0].priority0 maxpY 0.6
+par TestNet.s_0.qos[0].priority1.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority1.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority1.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority1.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority1.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority1.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[0].priority1.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[0].priority1.srTcm reverseOrder false
+par TestNet.s_0.qos[0].priority1.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[0].priority1.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[0].priority1.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[0].priority1.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[0].priority1.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority1.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority1.srTcm bitsPerToken 8
+par TestNet.s_0.qos[0].priority1.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority1.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority1.redG backpressure false
+par TestNet.s_0.qos[0].priority1.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority1.redG wq 0.002
+par TestNet.s_0.qos[0].priority1.redG minth 50
+par TestNet.s_0.qos[0].priority1.redG maxth 100
+par TestNet.s_0.qos[0].priority1.redG maxp 0.3
+par TestNet.s_0.qos[0].priority1.redG pkrate 150
+par TestNet.s_0.qos[0].priority1.redG useEcn false
+par TestNet.s_0.qos[0].priority1.redG packetCapacity 100
+par TestNet.s_0.qos[0].priority1.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority1.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority1.redY backpressure false
+par TestNet.s_0.qos[0].priority1.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority1.redY wq 0.002
+par TestNet.s_0.qos[0].priority1.redY minth 30
+par TestNet.s_0.qos[0].priority1.redY maxth 60
+par TestNet.s_0.qos[0].priority1.redY maxp 0.6
+par TestNet.s_0.qos[0].priority1.redY pkrate 150
+par TestNet.s_0.qos[0].priority1.redY useEcn false
+par TestNet.s_0.qos[0].priority1.redY packetCapacity 60
+par TestNet.s_0.qos[0].priority1.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[0].priority1.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[0].priority1.mux forwardServiceRegistration true
+par TestNet.s_0.qos[0].priority1.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[0].priority1.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[0].priority1.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[0].priority1.dropSink clockModule "\"\""
+par TestNet.s_0.qos[0].priority1.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[0].priority1.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[0].priority1.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[0].priority1.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[0].priority1.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[0].priority1.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[0].priority1.queue packetCapacity -1
+par TestNet.s_0.qos[0].priority1.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority1.queue dropperClass "\"\""
+par TestNet.s_0.qos[0].priority1.queue comparatorClass "\"\""
+par TestNet.s_0.qos[0].priority1.queue bufferModule "\"\""
+par TestNet.s_0.qos[0].priority1 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[0].priority1 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority1 wq 0.002
+par TestNet.s_0.qos[0].priority1 minthG 50
+par TestNet.s_0.qos[0].priority1 maxthG 100
+par TestNet.s_0.qos[0].priority1 maxpG 0.3
+par TestNet.s_0.qos[0].priority1 minthY 30
+par TestNet.s_0.qos[0].priority1 maxthY 60
+par TestNet.s_0.qos[0].priority1 maxpY 0.6
+par TestNet.s_0.qos[0].priority2.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority2.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority2.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority2.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority2.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[0].priority2.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[0].priority2.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[0].priority2.srTcm reverseOrder false
+par TestNet.s_0.qos[0].priority2.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[0].priority2.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[0].priority2.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[0].priority2.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[0].priority2.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority2.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[0].priority2.srTcm bitsPerToken 8
+par TestNet.s_0.qos[0].priority2.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority2.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority2.redG backpressure false
+par TestNet.s_0.qos[0].priority2.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority2.redG wq 0.002
+par TestNet.s_0.qos[0].priority2.redG minth 50
+par TestNet.s_0.qos[0].priority2.redG maxth 100
+par TestNet.s_0.qos[0].priority2.redG maxp 0.3
+par TestNet.s_0.qos[0].priority2.redG pkrate 150
+par TestNet.s_0.qos[0].priority2.redG useEcn false
+par TestNet.s_0.qos[0].priority2.redG packetCapacity 100
+par TestNet.s_0.qos[0].priority2.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[0].priority2.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[0].priority2.redY backpressure false
+par TestNet.s_0.qos[0].priority2.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[0].priority2.redY wq 0.002
+par TestNet.s_0.qos[0].priority2.redY minth 30
+par TestNet.s_0.qos[0].priority2.redY maxth 60
+par TestNet.s_0.qos[0].priority2.redY maxp 0.6
+par TestNet.s_0.qos[0].priority2.redY pkrate 150
+par TestNet.s_0.qos[0].priority2.redY useEcn false
+par TestNet.s_0.qos[0].priority2.redY packetCapacity 60
+par TestNet.s_0.qos[0].priority2.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[0].priority2.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[0].priority2.mux forwardServiceRegistration true
+par TestNet.s_0.qos[0].priority2.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[0].priority2.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[0].priority2.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[0].priority2.dropSink clockModule "\"\""
+par TestNet.s_0.qos[0].priority2.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[0].priority2.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[0].priority2.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[0].priority2.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[0].priority2.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[0].priority2.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[0].priority2.queue packetCapacity -1
+par TestNet.s_0.qos[0].priority2.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority2.queue dropperClass "\"\""
+par TestNet.s_0.qos[0].priority2.queue comparatorClass "\"\""
+par TestNet.s_0.qos[0].priority2.queue bufferModule "\"\""
+par TestNet.s_0.qos[0].priority2 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[0].priority2 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[0].priority2 wq 0.002
+par TestNet.s_0.qos[0].priority2 minthG 50
+par TestNet.s_0.qos[0].priority2 maxthG 100
+par TestNet.s_0.qos[0].priority2 maxpG 0.3
+par TestNet.s_0.qos[0].priority2 minthY 30
+par TestNet.s_0.qos[0].priority2 maxthY 60
+par TestNet.s_0.qos[0].priority2 maxpY 0.6
+par TestNet.s_0.qos[0].scheduler typename "\"inet.queueing.scheduler.PriorityScheduler\""
+par TestNet.s_0.qos[0].scheduler displayStringTextFormat "\"scheduled %p pk (%l)\""
+par TestNet.s_0.qos[0].scheduler reverseOrder false
+par TestNet.s_0.qos[0].shaper typename "\"inet.queueing.server.TokenBasedServer\""
+par TestNet.s_0.qos[0].shaper displayStringTextFormat "\"contains %n tk\\nserved %p pk (%l)\""
+par TestNet.s_0.qos[0].shaper initialNumTokens 0
+par TestNet.s_0.qos[0].shaper maxNumTokens 100
+par TestNet.s_0.qos[0].shaper tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[0].shaper tokenConsumptionPerBit parent.tokenConsumptionPerBit
+par TestNet.s_0.qos[0].tokenGen typename "\"inet.queueing.tokengenerator.TimeBasedTokenGenerator\""
+par TestNet.s_0.qos[0].tokenGen displayStringTextFormat "\"generated %t tk\\nto %s\""
+par TestNet.s_0.qos[0].tokenGen storageModule "\"^.shaper\""
+par TestNet.s_0.qos[0].tokenGen clockModule "\"\""
+par TestNet.s_0.qos[0].tokenGen generationInterval parent.generationInterval
+attr unit s
+par TestNet.s_0.qos[0].tokenGen numTokens parent.numTokens
+par TestNet.s_0.qos[0] typename "\"zte_qos.pipeline.QosPipeline\""
+par TestNet.s_0.qos[0] bw 0bps
+attr unit bps
+par TestNet.s_0.qos[0] committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[0] tokenConsumptionPerBit 1
+par TestNet.s_0.qos[0] generationInterval 1s
+attr unit s
+par TestNet.s_0.qos[0] numTokens 1
+par TestNet.s_0.qos[1].in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].shaper.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].classifier typename "\"inet.queueing.classifier.PacketClassifier\""
+par TestNet.s_0.qos[1].classifier displayStringTextFormat "\"classified %p pk (%l)\""
+par TestNet.s_0.qos[1].classifier reverseOrder false
+par TestNet.s_0.qos[1].classifier classifierClass "\"zte_qos::pipeline::classifier::Tos2QosClassifier\""
+par TestNet.s_0.qos[1].priority0.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority0.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority0.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority0.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority0.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority0.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[1].priority0.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[1].priority0.srTcm reverseOrder false
+par TestNet.s_0.qos[1].priority0.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[1].priority0.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[1].priority0.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[1].priority0.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[1].priority0.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority0.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority0.srTcm bitsPerToken 8
+par TestNet.s_0.qos[1].priority0.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority0.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority0.redG backpressure false
+par TestNet.s_0.qos[1].priority0.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority0.redG wq 0.002
+par TestNet.s_0.qos[1].priority0.redG minth 50
+par TestNet.s_0.qos[1].priority0.redG maxth 100
+par TestNet.s_0.qos[1].priority0.redG maxp 0.3
+par TestNet.s_0.qos[1].priority0.redG pkrate 150
+par TestNet.s_0.qos[1].priority0.redG useEcn false
+par TestNet.s_0.qos[1].priority0.redG packetCapacity 100
+par TestNet.s_0.qos[1].priority0.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority0.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority0.redY backpressure false
+par TestNet.s_0.qos[1].priority0.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority0.redY wq 0.002
+par TestNet.s_0.qos[1].priority0.redY minth 30
+par TestNet.s_0.qos[1].priority0.redY maxth 60
+par TestNet.s_0.qos[1].priority0.redY maxp 0.6
+par TestNet.s_0.qos[1].priority0.redY pkrate 150
+par TestNet.s_0.qos[1].priority0.redY useEcn false
+par TestNet.s_0.qos[1].priority0.redY packetCapacity 60
+par TestNet.s_0.qos[1].priority0.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[1].priority0.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[1].priority0.mux forwardServiceRegistration true
+par TestNet.s_0.qos[1].priority0.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[1].priority0.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[1].priority0.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[1].priority0.dropSink clockModule "\"\""
+par TestNet.s_0.qos[1].priority0.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[1].priority0.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[1].priority0.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[1].priority0.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[1].priority0.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[1].priority0.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[1].priority0.queue packetCapacity -1
+par TestNet.s_0.qos[1].priority0.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority0.queue dropperClass "\"\""
+par TestNet.s_0.qos[1].priority0.queue comparatorClass "\"\""
+par TestNet.s_0.qos[1].priority0.queue bufferModule "\"\""
+par TestNet.s_0.qos[1].priority0 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[1].priority0 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority0 wq 0.002
+par TestNet.s_0.qos[1].priority0 minthG 50
+par TestNet.s_0.qos[1].priority0 maxthG 100
+par TestNet.s_0.qos[1].priority0 maxpG 0.3
+par TestNet.s_0.qos[1].priority0 minthY 30
+par TestNet.s_0.qos[1].priority0 maxthY 60
+par TestNet.s_0.qos[1].priority0 maxpY 0.6
+par TestNet.s_0.qos[1].priority1.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority1.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority1.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority1.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority1.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority1.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[1].priority1.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[1].priority1.srTcm reverseOrder false
+par TestNet.s_0.qos[1].priority1.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[1].priority1.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[1].priority1.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[1].priority1.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[1].priority1.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority1.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority1.srTcm bitsPerToken 8
+par TestNet.s_0.qos[1].priority1.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority1.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority1.redG backpressure false
+par TestNet.s_0.qos[1].priority1.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority1.redG wq 0.002
+par TestNet.s_0.qos[1].priority1.redG minth 50
+par TestNet.s_0.qos[1].priority1.redG maxth 100
+par TestNet.s_0.qos[1].priority1.redG maxp 0.3
+par TestNet.s_0.qos[1].priority1.redG pkrate 150
+par TestNet.s_0.qos[1].priority1.redG useEcn false
+par TestNet.s_0.qos[1].priority1.redG packetCapacity 100
+par TestNet.s_0.qos[1].priority1.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority1.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority1.redY backpressure false
+par TestNet.s_0.qos[1].priority1.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority1.redY wq 0.002
+par TestNet.s_0.qos[1].priority1.redY minth 30
+par TestNet.s_0.qos[1].priority1.redY maxth 60
+par TestNet.s_0.qos[1].priority1.redY maxp 0.6
+par TestNet.s_0.qos[1].priority1.redY pkrate 150
+par TestNet.s_0.qos[1].priority1.redY useEcn false
+par TestNet.s_0.qos[1].priority1.redY packetCapacity 60
+par TestNet.s_0.qos[1].priority1.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[1].priority1.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[1].priority1.mux forwardServiceRegistration true
+par TestNet.s_0.qos[1].priority1.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[1].priority1.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[1].priority1.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[1].priority1.dropSink clockModule "\"\""
+par TestNet.s_0.qos[1].priority1.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[1].priority1.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[1].priority1.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[1].priority1.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[1].priority1.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[1].priority1.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[1].priority1.queue packetCapacity -1
+par TestNet.s_0.qos[1].priority1.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority1.queue dropperClass "\"\""
+par TestNet.s_0.qos[1].priority1.queue comparatorClass "\"\""
+par TestNet.s_0.qos[1].priority1.queue bufferModule "\"\""
+par TestNet.s_0.qos[1].priority1 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[1].priority1 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority1 wq 0.002
+par TestNet.s_0.qos[1].priority1 minthG 50
+par TestNet.s_0.qos[1].priority1 maxthG 100
+par TestNet.s_0.qos[1].priority1 maxpG 0.3
+par TestNet.s_0.qos[1].priority1 minthY 30
+par TestNet.s_0.qos[1].priority1 maxthY 60
+par TestNet.s_0.qos[1].priority1 maxpY 0.6
+par TestNet.s_0.qos[1].priority2.in.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority2.srTcm.out[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority2.srTcm.out[1].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority2.srTcm.out[2].channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority2.queue.out.channel typename "\"ned.IdealChannel\""
+par TestNet.s_0.qos[1].priority2.srTcm typename "\"inet.queueing.classifier.SingleRateThreeColorClassifier\""
+par TestNet.s_0.qos[1].priority2.srTcm displayStringTextFormat "\"contains %n tk\\nmetered %p pk (%l)\""
+par TestNet.s_0.qos[1].priority2.srTcm reverseOrder false
+par TestNet.s_0.qos[1].priority2.srTcm buckets "[{initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 1}, {initialNumTokens: 12.5, maxNumTokens: 12.5, tokenProductionRate: 0}]"
+par TestNet.s_0.qos[1].priority2.srTcm tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[1].priority2.srTcm tokenConsumptionPerBit 0.125
+par TestNet.s_0.qos[1].priority2.srTcm committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[1].priority2.srTcm committedBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority2.srTcm excessBurstSize 100b
+attr unit b
+par TestNet.s_0.qos[1].priority2.srTcm bitsPerToken 8
+par TestNet.s_0.qos[1].priority2.redG typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority2.redG displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority2.redG backpressure false
+par TestNet.s_0.qos[1].priority2.redG collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority2.redG wq 0.002
+par TestNet.s_0.qos[1].priority2.redG minth 50
+par TestNet.s_0.qos[1].priority2.redG maxth 100
+par TestNet.s_0.qos[1].priority2.redG maxp 0.3
+par TestNet.s_0.qos[1].priority2.redG pkrate 150
+par TestNet.s_0.qos[1].priority2.redG useEcn false
+par TestNet.s_0.qos[1].priority2.redG packetCapacity 100
+par TestNet.s_0.qos[1].priority2.redY typename "\"inet.queueing.filter.RedDropper\""
+par TestNet.s_0.qos[1].priority2.redY displayStringTextFormat "\"dropped %d/%p pk (%k/%l)\""
+par TestNet.s_0.qos[1].priority2.redY backpressure false
+par TestNet.s_0.qos[1].priority2.redY collectionModule "\"^.queue\""
+par TestNet.s_0.qos[1].priority2.redY wq 0.002
+par TestNet.s_0.qos[1].priority2.redY minth 30
+par TestNet.s_0.qos[1].priority2.redY maxth 60
+par TestNet.s_0.qos[1].priority2.redY maxp 0.6
+par TestNet.s_0.qos[1].priority2.redY pkrate 150
+par TestNet.s_0.qos[1].priority2.redY useEcn false
+par TestNet.s_0.qos[1].priority2.redY packetCapacity 60
+par TestNet.s_0.qos[1].priority2.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_0.qos[1].priority2.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_0.qos[1].priority2.mux forwardServiceRegistration true
+par TestNet.s_0.qos[1].priority2.mux forwardProtocolRegistration true
+par TestNet.s_0.qos[1].priority2.dropSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_0.qos[1].priority2.dropSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_0.qos[1].priority2.dropSink clockModule "\"\""
+par TestNet.s_0.qos[1].priority2.dropSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_0.qos[1].priority2.dropSink consumptionInterval 0s
+attr unit s
+par TestNet.s_0.qos[1].priority2.dropSink scheduleForAbsoluteTime true
+par TestNet.s_0.qos[1].priority2.dropSink sinkType "\"drop\""
+par TestNet.s_0.qos[1].priority2.queue typename "\"inet.queueing.queue.PacketQueue\""
+par TestNet.s_0.qos[1].priority2.queue displayStringTextFormat "\"contains %p pk (%l) pushed %u\\npulled %o removed %r dropped %d\""
+par TestNet.s_0.qos[1].priority2.queue packetCapacity -1
+par TestNet.s_0.qos[1].priority2.queue dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority2.queue dropperClass "\"\""
+par TestNet.s_0.qos[1].priority2.queue comparatorClass "\"\""
+par TestNet.s_0.qos[1].priority2.queue bufferModule "\"\""
+par TestNet.s_0.qos[1].priority2 typename "\"zte_qos.pipeline.RedQueue\""
+par TestNet.s_0.qos[1].priority2 dataCapacity 524288b
+attr unit b
+par TestNet.s_0.qos[1].priority2 wq 0.002
+par TestNet.s_0.qos[1].priority2 minthG 50
+par TestNet.s_0.qos[1].priority2 maxthG 100
+par TestNet.s_0.qos[1].priority2 maxpG 0.3
+par TestNet.s_0.qos[1].priority2 minthY 30
+par TestNet.s_0.qos[1].priority2 maxthY 60
+par TestNet.s_0.qos[1].priority2 maxpY 0.6
+par TestNet.s_0.qos[1].scheduler typename "\"inet.queueing.scheduler.PriorityScheduler\""
+par TestNet.s_0.qos[1].scheduler displayStringTextFormat "\"scheduled %p pk (%l)\""
+par TestNet.s_0.qos[1].scheduler reverseOrder false
+par TestNet.s_0.qos[1].shaper typename "\"inet.queueing.server.TokenBasedServer\""
+par TestNet.s_0.qos[1].shaper displayStringTextFormat "\"contains %n tk\\nserved %p pk (%l)\""
+par TestNet.s_0.qos[1].shaper initialNumTokens 0
+par TestNet.s_0.qos[1].shaper maxNumTokens 100
+par TestNet.s_0.qos[1].shaper tokenConsumptionPerPacket 0
+par TestNet.s_0.qos[1].shaper tokenConsumptionPerBit parent.tokenConsumptionPerBit
+par TestNet.s_0.qos[1].tokenGen typename "\"inet.queueing.tokengenerator.TimeBasedTokenGenerator\""
+par TestNet.s_0.qos[1].tokenGen displayStringTextFormat "\"generated %t tk\\nto %s\""
+par TestNet.s_0.qos[1].tokenGen storageModule "\"^.shaper\""
+par TestNet.s_0.qos[1].tokenGen clockModule "\"\""
+par TestNet.s_0.qos[1].tokenGen generationInterval parent.generationInterval
+attr unit s
+par TestNet.s_0.qos[1].tokenGen numTokens parent.numTokens
+par TestNet.s_0.qos[1] typename "\"zte_qos.pipeline.QosPipeline\""
+par TestNet.s_0.qos[1] bw 0bps
+attr unit bps
+par TestNet.s_0.qos[1] committedInformationRate 8bps
+attr unit bps
+par TestNet.s_0.qos[1] tokenConsumptionPerBit 1
+par TestNet.s_0.qos[1] generationInterval 1s
+attr unit s
+par TestNet.s_0.qos[1] numTokens 1
+par TestNet.s_0 typename "\"zte_qos.switch.Switch\""
+par TestNet.s_0 sid 0
+par TestNet.s_0 infoDir "\"dataset/test/info/\""
+par TestNet.s_0 infoFileType "\"json\""
+par TestNet.s_0 infoFile "\"dataset/test/info/0.json\""
+par TestNet.s_1.tIn.channel typename "\"ned.IdealChannel\""
+par TestNet.s_1.in[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_1.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_1.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_1.mux forwardServiceRegistration true
+par TestNet.s_1.mux forwardProtocolRegistration true
+par TestNet.s_1.routeSel typename "\"zte_qos.switch.routing.RouteSelector\""
+par TestNet.s_1.routeSel displayStringTextFormat "\"classified %p pk (%l)\""
+par TestNet.s_1.routeSel reverseOrder false
+par TestNet.s_1.routeSel sid 1
+par TestNet.s_1.routeSel infoFile "\"dataset/test/info/1.json\""
+par TestNet.s_1.dstSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_1.dstSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_1.dstSink clockModule "\"\""
+par TestNet.s_1.dstSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_1.dstSink consumptionInterval 0s
+attr unit s
+par TestNet.s_1.dstSink scheduleForAbsoluteTime true
+par TestNet.s_1.dstSink sinkType "\"dst\""
+par TestNet.s_1 typename "\"zte_qos.switch.Switch\""
+par TestNet.s_1 sid 1
+par TestNet.s_1 infoDir "\"dataset/test/info/\""
+par TestNet.s_1 infoFileType "\"json\""
+par TestNet.s_1 infoFile "\"dataset/test/info/1.json\""
+par TestNet.s_2.tIn.channel typename "\"ned.IdealChannel\""
+par TestNet.s_2.in[0].channel typename "\"ned.IdealChannel\""
+par TestNet.s_2.mux typename "\"inet.queueing.common.PacketMultiplexer\""
+par TestNet.s_2.mux displayStringTextFormat "\"passed %p pk (%l)\""
+par TestNet.s_2.mux forwardServiceRegistration true
+par TestNet.s_2.mux forwardProtocolRegistration true
+par TestNet.s_2.routeSel typename "\"zte_qos.switch.routing.RouteSelector\""
+par TestNet.s_2.routeSel displayStringTextFormat "\"classified %p pk (%l)\""
+par TestNet.s_2.routeSel reverseOrder false
+par TestNet.s_2.routeSel sid 2
+par TestNet.s_2.routeSel infoFile "\"dataset/test/info/2.json\""
+par TestNet.s_2.dstSink typename "\"zte_qos.sink.Sink\""
+par TestNet.s_2.dstSink displayStringTextFormat "\"received %p pk (%l)\""
+par TestNet.s_2.dstSink clockModule "\"\""
+par TestNet.s_2.dstSink initialConsumptionOffset 0s
+attr unit s
+par TestNet.s_2.dstSink consumptionInterval 0s
+attr unit s
+par TestNet.s_2.dstSink scheduleForAbsoluteTime true
+par TestNet.s_2.dstSink sinkType "\"dst\""
+par TestNet.s_2 typename "\"zte_qos.switch.Switch\""
+par TestNet.s_2 sid 2
+par TestNet.s_2 infoDir "\"dataset/test/info/\""
+par TestNet.s_2 infoFileType "\"json\""
+par TestNet.s_2 infoFile "\"dataset/test/info/2.json\""
+par TestNet.l_0_1__0 typename "\"zte_qos.link.Link\""
+par TestNet.l_0_1__0 displayStringTextFormat "\"processed %p pk (%l)\""
+par TestNet.l_0_1__0 clockModule "\"\""
+par TestNet.l_0_1__0 schedulingPriority 0
+par TestNet.l_0_1__0 scheduleZeroDelay true
+par TestNet.l_0_1__0 delay 1e-05s
+attr unit s
+par TestNet.l_0_1__0 bitrate 32bps
+attr unit bps
+par TestNet.l_0_2__0 typename "\"zte_qos.link.Link\""
+par TestNet.l_0_2__0 displayStringTextFormat "\"processed %p pk (%l)\""
+par TestNet.l_0_2__0 clockModule "\"\""
+par TestNet.l_0_2__0 schedulingPriority 0
+par TestNet.l_0_2__0 scheduleZeroDelay true
+par TestNet.l_0_2__0 delay 1e-05s
+attr unit s
+par TestNet.l_0_2__0 bitrate 32bps
+attr unit bps
+par TestNet typename "\"zte_qos.networks.TestNet\""
+par TestNet dataDir "\"dataset/test/\""
+
