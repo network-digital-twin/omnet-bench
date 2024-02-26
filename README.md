@@ -62,11 +62,11 @@ python -m pip install -r requirements.txt
 
 Then, run `main.py` as follow:
 ```bash
-python main.py -i <INFO_DIR> -t <TRACE_FN> -j 1
+python main.py -i <INFO_DIR> -t <TRACE_FN> -j 1 -w <CORES>
 ```
-where `<INFO_DIR>` is the folder path holding the switch info files, and `<TRACE_FN>` is the file path of the packet trace. `-j` enables JSON parsing of the info files. As an example, one can run:
+where `<INFO_DIR>` is the folder path holding the switch info files, and `<TRACE_FN>` is the file path of the packet trace. `-j` enables JSON parsing of the info files. `-w` specifies the number of workers/cores used to load the switches info files in parallel. As an example, one can run:
 ```bash
-python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/dataset/test/trace.txt -j 1
+python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/dataset/test/trace.txt -j 1 -w 36
 ```
 The output will be:
 ```bash
@@ -175,6 +175,64 @@ Below shows the resulted `ZteNet-#0-res-flows.csv` file for reference:
 
 The columns are `['src', 'dst', 'num_packets', 'delay', 'jitter', 'drop_rate']`.
 
+## Speed Up Project Building
+
+To enable multi-core building, set the temporary environment variable `CORE` to an integer and run as:
+```bash
+# <ROOT>/src/
+CORE=16 make build
+```
+
+The same applies to other make commands.
+
+## Using a Customized Network
+
+To specify a network with a different name from the default `ZteNet`, specify the network name in the network topology generator:
+```bash
+# <ROOT>/src/zte_qos/tools/topo-gen/
+python main.py -i <INFO_DIR> -t <TRACE_FN> -n <NETWORK_NAME> -j 1 -w 36
+```
+
+For example, to generate a network named `NaNet`, run as:
+```bash
+# <ROOT>/src/zte_qos/tools/topo-gen/
+python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/dataset/test/trace.txt -n NaNet -j 1 -w 36
+```
+
+The output will suggest adding a Config block to an INI file:
+~~~bash
+100%|██████████| 3/3 [00:00<00:00, 15.78it/s]
+"../../src/networks/gen/NaNet.ned" successfully generated.
+Please add the following Config block to "../../simulations/config/GenNets.ini", if not exist:
+```
+[Config NaNet]
+description = "NaNet."
+network = zte_qos.networks.gen.NaNet
+#sim-time-limit = 60s
+#*.traceFile = "<TRACE_FN>"
+###########################
+###         QOS         ###
+###########################
+# Add QoS configurations here.
+```
+~~~
+
+Add the Config block by coping and pasting the text between the code block marks to `GenNets.ini`. Then, run the simulation by changing the network name:
+```bash
+# <ROOT>/src/
+NET=NaNet SIM_TIME=60s make run
+```
+
+A LOG file with a different name (`NaNet-#0.log`) will be generated in the result folder. Finally, use the result analyzer to specify this log file for the final results.
+
+
 ## For Developers
 
-TODO.
+If you modify the project C++ code or building configurations like include/linking, you need to generate the Makefiles and build the project again:
+```bash
+# <ROOT>/src/
+make gen-makefiles
+make build
+```
+
+If you modify only NED files and INI files, re-building is not required and you can run the simulation directly.
