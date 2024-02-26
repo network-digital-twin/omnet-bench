@@ -192,7 +192,7 @@ The same applies to other make commands.
 To specify a network with a different name from the default `ZteNet`, specify the network name in the network topology generator:
 ```bash
 # <ROOT>/src/zte_qos/tools/topo-gen/
-python main.py -i <INFO_DIR> -t <TRACE_FN> -n <NETWORK_NAME> -j 1 -w 36
+python main.py -i <INFO_DIR> -t <TRACE_FN> -n <NETWORK_NAME> -j 1 -w <CORES>
 ```
 
 For example, to generate a network named `NaNet`, run as:
