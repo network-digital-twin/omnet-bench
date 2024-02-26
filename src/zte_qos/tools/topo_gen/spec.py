@@ -22,6 +22,7 @@ class Switch:
         self.routing: dict[int, dict] = self.yaml_dict['routing']
         self.switch_type: str = self.yaml_dict['type']
         self.name = f's_{self.id}'
+        self.links: list[Link] = []
 
     def to_ned(self, indent: int = 4) -> list[str]:
         """
@@ -32,6 +33,7 @@ class Switch:
         return [
             f'{self.name}: Switch {{',
             indent_str + f'sid = {self.id};',
+            *[(indent_str + f'qos[{i}].bw = {self.links[i].bw}bps;') for i in range(len(self.links))],
             f'}}'
         ]
 
@@ -164,6 +166,7 @@ class Network:
                                     pair_id=len(link_map[src][dst]))
                     links[new_link.name] = new_link
                     link_map[src][dst].add(src_port)
+                    switches[new_link.src].links.append(new_link)
         return switches, links
 
     def generate_ned(self, indent: int = 4) -> None:
@@ -203,6 +206,10 @@ class Network:
                 f'description = "{self.description}"',
                 f'network = {self.namespace}.{self.name}',
                 f'#sim-time-limit = 60s',
+                f'###########################',
+                f'###         QOS         ###',
+                f'###########################',
+                f'# Add QoS configurations here.',
                 f'```',
             ]))
 

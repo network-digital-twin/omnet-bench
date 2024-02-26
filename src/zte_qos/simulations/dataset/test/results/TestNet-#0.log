@@ -1,0 +1,17 @@
+
+Running configuration TestNet, run #0...
+Assigned runID=TestNet-0-20240226-10:26:16-21548
+Setting up network "zte_qos.networks.TestNet"...
+Initializing...
+
+Running simulation...
+[RES] {"metrics":{"drop":0,"dst":0,"end_ts":2500000000.0,"pid":150,"src":0,"start_ts":2500000000.0},"module":"TestNet.s_0.dstSink","type":"packet"}
+[RES] {"metrics":{"drop":0,"dst":2,"end_ts":8250010000.0,"pid":135,"src":0,"start_ts":2000000000.0},"module":"TestNet.s_2.dstSink","type":"packet"}
+[RES] {"metrics":{"drop":0,"dst":1,"end_ts":24750010000.0,"pid":123,"src":0,"start_ts":1500000000.0},"module":"TestNet.s_1.dstSink","type":"packet"}
+[RES] {"metrics":{"drop":0,"dst":1,"end_ts":32250009999.999996,"pid":33,"src":0,"start_ts":1000000000.0},"module":"TestNet.s_1.dstSink","type":"packet"}
+[RES] {"metrics":{"drop":0,"dst":1,"end_ts":48500009999.99999,"pid":6,"src":0,"start_ts":500000000.0},"module":"TestNet.s_1.dstSink","type":"packet"}
+
+<!> Simulation time limit reached -- at t=60s, event #134
+
+Calling finish() at end of Run #0...
+[RES] {"metrics":{"end":"1708914376840463900","start":"1708914376839460900"},"module":"TestNet.t","type":"simulation"}

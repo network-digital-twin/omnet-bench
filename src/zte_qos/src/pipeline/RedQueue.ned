@@ -24,13 +24,14 @@ import inet.queueing.queue.PacketQueue;
 module RedQueue
 {
     parameters:
+        // queue
+        int dataCapacity @unit(b) = default(-1b);
+        // dropper
         double wq = default(0.002);
-        // redG
-        double minthG = default(50);
+        double minthG = default(50);	// Green
         double maxthG = default(100);
         double maxpG = default(0.3);
-        // redY
-        double minthY = default(30);
+        double minthY = default(30);	// Red
         double maxthY = default(60);
         double maxpY = default(0.6);
         @display("i=block/boundedqueue;bgb=680,371");
@@ -65,6 +66,7 @@ module RedQueue
             @display("p=305,100");
         }
         queue: PacketQueue {
+            dataCapacity = parent.dataCapacity;
             @display("p=589,175");
         }
     connections allowunconnected:
