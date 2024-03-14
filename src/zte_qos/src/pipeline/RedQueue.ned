@@ -16,8 +16,8 @@
 package zte_qos.pipeline;
 
 import zte_qos.sink.Sink;
+import zte_qos.pipeline.dropper.RedDropper;
 import inet.queueing.classifier.SingleRateThreeColorClassifier;
-import inet.queueing.filter.RedDropper;
 import inet.queueing.common.PacketMultiplexer;
 import inet.queueing.queue.PacketQueue;
 
