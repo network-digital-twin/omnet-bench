@@ -33,7 +33,13 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/pipeline/classifier/Tos2QosClassifier.o $O/sink/Sink.o $O/switch/routing/RouteSelector.o $O/terminal/Terminal.o $O/packet/MetaTag_m.o
+OBJS = \
+    $O/pipeline/classifier/Tos2QosClassifier.o \
+    $O/pipeline/dropper/RedDropper.o \
+    $O/sink/Sink.o \
+    $O/switch/routing/RouteSelector.o \
+    $O/terminal/Terminal.o \
+    $O/packet/MetaTag_m.o
 
 # Message files
 MSGFILES = \
