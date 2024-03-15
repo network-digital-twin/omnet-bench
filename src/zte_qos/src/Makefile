@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for zte_qos
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -I$$\(INET_PROJ\)/src/ -I. -L$$\(INET_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -I$(INET_PROJ)/src/ -I. -L$(INET_PROJ)/src -lINET$(D)
 #
 
 # Name of target to be created (-o option)
@@ -82,8 +82,6 @@ endif
 
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
--include makefrag
-
 #------------------------------------------------------------------------------
 
 # Main target

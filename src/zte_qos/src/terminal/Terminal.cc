@@ -87,6 +87,7 @@ void Terminal::generateTrace() {
 }
 
 void Terminal::initialize() {
+    //EV_WARN << "[RES] init " << getNowStr() << std::endl;
     genMsg = new cMessage("T_GEN");
     traceFile = par("traceFile").stringValue();
     // self-message to sendDirect in handleMessage
@@ -95,6 +96,7 @@ void Terminal::initialize() {
 
 void Terminal::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg == genMsg) {
+        //EV_WARN << "[RES] " << getNowStr() << std::endl;
         generateTrace();
         startT = getNowStr();   // record as the starting timestamp of simulation
     } else {

@@ -61,7 +61,7 @@ class Switch:
 
 
 class Link:
-    DELAY_DEFAULT: float = 10  # propagation delay - us
+    DELAY_DEFAULT: float = 4000  # propagation delay - us
 
     """ Link model. """
     def __init__(self, src: Switch, src_port: str, dst: Switch, dst_port: str = None,
