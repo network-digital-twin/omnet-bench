@@ -1,6 +1,8 @@
 # omnet-bench
 Implements a benchmark environment using OMNeT++.
 
+**For the experiments conducted in the paper, please checkout to the `experiments` branch: https://github.com/network-digital-twin/omnet-bench/tree/experiments**
+
 ## Introduction
 Essentially, the implementation lies within the [`src/zte_qos/`](src/zte_qos/) folder, which is an OMNeT++ project taking [INET](https://inet.omnetpp.org/) from [`src/inet/`](src/inet/) as a reference project. The INET project is a git submodule in this repository.
 
