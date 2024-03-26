@@ -1,5 +1,8 @@
-# omnet-bench
-Implements a benchmark environment using OMNeT++.
+# omnet-bench-experiment
+This branch contains the source code, input data and simulation output  for the experiments conducted in the paper:
+
+- Input topology and workload traces: [`src/zte_qos/simulations/dataset/zte/`](src/zte_qos/simulations/dataset/zte/)
+- Results: [`src/zte_qos/simulations/results/results-exp1-slim/`](src/zte_qos/simulations/results/results-exp1-slim/)
 
 ## Introduction
 Essentially, the implementation lies within the [`src/zte_qos/`](src/zte_qos/) folder, which is an OMNeT++ project taking [INET](https://inet.omnetpp.org/) from [`src/inet/`](src/inet/) as a reference project. The INET project is a git submodule in this repository.
@@ -44,15 +47,28 @@ Below specifies the minimum operations required to perform a benchmark on a spec
 3. results will be recorded to `src/zte_qos/simulations/results/`.
 4. JSON parsing instead of YAML parsing will be enabled.
 
+### 0. Clone the repository
+First clone this branch of this repository.
+```
+git clone --single-branch --branch experiments git@github.com:network-digital-twin/omnet-bench.git
+cd omnet-bench
+```
+
 ### 1. Prepare network & trace data
 Two categories of data are required:
 1. `info/<SWITCH_ID>.yaml`: a directory, not necessarily named `info/`, should contain all the switch info YAML files. These files include the routing information of the switches, which is required by the [RouteSelectors](src/zte_qos/src/switch/routing/RouteSelector.ned).
 2. `trace.txt`: a text file specifying a trace of packets to be simulated on the network, which is required by the [Terminal](src/zte_qos/src/terminal/Terminal.ned). Each line in the file represents a packet, whose attributes are separated by one single space. Lines starting with a "#" are ignored.
 
 ### 2. Generate network topology
-Go to folder where the network topology generator resides:
+First unzip the topology data in `src/zte_qos/simulations/dataset/zte`:
 ```bash
-cd src/zte_qos/tools/topo_gen/
+cd src/zte_qos/simulations/dataset/zte
+unzip final_topology_0.zip
+```
+
+Then go to the folder where the network topology generator resides (`src/zte_qos/tools/topo_gen/`):
+```bash
+cd ../../../tools/topo_gen/
 ```
 
 Install the Python dependencies (remember to switch to a `conda` environment if `conda` is utilized):
@@ -64,11 +80,13 @@ Then, run `main.py` as follow:
 ```bash
 python main.py -i <INFO_DIR> -t <TRACE_FN> -j 1 -w <CORES>
 ```
-where `<INFO_DIR>` is the folder path holding the switch info files, and `<TRACE_FN>` is the file path of the packet trace. `-j` enables JSON parsing of the info files. `-w` specifies the number of workers/cores used to load the switches info files in parallel. As an example, one can run:
+where `<INFO_DIR>` is the folder path holding the switch info files, and `<TRACE_FN>` is the file path of the packet trace. `-j` enables JSON parsing of the info files. `-w` specifies the number of workers/cores used to load the switches info files in parallel. 
+
+For the experiments, one can run:
 ```bash
-python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/dataset/test/trace.txt -j 1 -w 36
+python main.py -i ../../simulations/dataset/zte/final_topology_0/ -t ../../simulations/dataset/zte/traces/trace_0_FLOW_THROUGHPUT-1250000__SIMULATION_TIME-100000000__PAIRS_PER_SRC-1-0__MSG_SIZE-10000__PACKET_SIZE-1400__BANDWIDTH-1250000__PRIO_LEVELS-3 -j 1 -w 36
 ```
-The output will be:
+The output will be similar as follows:
 ```bash
 100%|██████████| 3/3 [00:00<00:00, 15.78it/s]
 "../../src/networks/gen/ZteNet.ned" successfully generated.
@@ -82,15 +100,16 @@ After successful generation, go to the first [`src/`](src/) directory of the rep
 cd ../../../
 ```
 
-Then, run the simulation using the `Makefile`:
+
+To run the experiment:
+First tune the parameter `**.qos[*].generationInterval` in `src/zte_qos/simulations/config/GenNets.ini` to be either `ns(100000)`,  `ns(1000000)`, `ns(500000)`.
+Then for each parameter value, run the following command at `src/`:
 ```bash
-NET=ZteNet SIM_TIME=<SIM_TIME>s make run
+for i in 0 1 2 3 4; do NET=ZteNet SIM_TIME=0.5s make run; j=$((i+1)); sed -i "27s/$i/$j/" ./zte_qos/simulations/omnetpp.ini; done
 ```
-where `<SIM_TIME>` specifies the simulation time duration in seconds. Note that this is the virtual simulation time, but not the real-world wall clock time. As an example, to simulate 60 seconds (the simulation stops when virtual time reaches 60s), one can run:
-```bash
-NET=ZteNet SIM_TIME=60s make run
-```
-The output will be:
+where `SIM_TIME` specifies the simulation time duration in seconds. Note that this is the virtual simulation time, but not the real-world wall clock time. 
+
+The output will be similar to the following:
 ```bash
 git submodule update --init --recursive
 cd zte_qos/simulations; ../src/zte_qos -m -u Cmdenv -c ZteNet omnetpp.ini --sim-time-limit=60s
@@ -115,7 +134,9 @@ Redirecting output to file "**/omnet-bench/src/zte_qos/simulations/results/ZteNe
 End.
 ```
 
-After the simulation, a `.log` file will be generated in the `zte_qos/simulations/results/` folder. For this section, the name will always be `ZteNet-#0.log`, where `#0` represents Run Number 0.
+After each run of the simulation, a `ZteNet-#{x}.log` file will be generated in the `zte_qos/simulations/results/` folder.
+
+The results used in the paper can be found in `zte_qos/simulations/results/results-exp1-slim/` folder.
 
 ### 4. Analyze the simulation result
 Go to the folder where the result analyzer resides:
@@ -188,45 +209,6 @@ CORE=16 make build
 
 The same applies to other make commands.
 
-## Using a Customized Network
-
-To specify a network with a different name from the default `ZteNet`, specify the network name in the network topology generator:
-```bash
-# <ROOT>/src/zte_qos/tools/topo-gen/
-python main.py -i <INFO_DIR> -t <TRACE_FN> -n <NETWORK_NAME> -j 1 -w <CORES>
-```
-
-For example, to generate a network named `NaNet`, run as:
-```bash
-# <ROOT>/src/zte_qos/tools/topo-gen/
-python main.py -i ../../simulations/dataset/test/info/ -t ../../simulations/dataset/test/trace.txt -n NaNet -j 1 -w 36
-```
-
-The output will suggest adding a Config block to an INI file:
-~~~bash
-100%|██████████| 3/3 [00:00<00:00, 15.78it/s]
-"../../src/networks/gen/NaNet.ned" successfully generated.
-Please add the following Config block to "../../simulations/config/GenNets.ini", if not exist:
-```
-[Config NaNet]
-description = "NaNet."
-network = zte_qos.networks.gen.NaNet
-#sim-time-limit = 60s
-#*.traceFile = "<TRACE_FN>"
-###########################
-###         QOS         ###
-###########################
-# Add QoS configurations here.
-```
-~~~
-
-Add the Config block by coping and pasting the text between the code block marks to `GenNets.ini`. Then, run the simulation by changing the network name:
-```bash
-# <ROOT>/src/
-NET=NaNet SIM_TIME=60s make run
-```
-
-A LOG file with a different name (`NaNet-#0.log`) will be generated in the result folder. Finally, use the result analyzer to specify this log file for the final results.
 
 
 ## For Developers
@@ -239,3 +221,4 @@ make build
 ```
 
 If you modify only NED files and INI files, re-building is not required and you can run the simulation directly.
+
